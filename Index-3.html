@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a472a">
+<title>Plan Nutricional - Adrián Vaca</title>
+<style>
+
+        
+        
+        :root {
+            --forest-dark: #1a472a;
+            --forest-mid: #2d5f3f;
+            --forest-light: #4a8b5e;
+            --sage: #8fbc8f;
+            --cream: #faf8f3;
+            --warm-white: #ffffff;
+            --terracotta: #d4754e;
+            --gold: #d4a574;
+            --charcoal: #2b2b2b;
+            --shadow: rgba(26, 71, 42, 0.15);
+            --success: #4caf50;
+            --danger: #f44336;
+            
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--cream);
+            color: var(--charcoal);
+            overflow-x: hidden;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
+        }
+        
+        /* Navigation */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--warm-white);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 20px var(--shadow);
+            z-index: 1000;
+            border-top: 1px solid rgba(143, 188, 143, 0.2);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 6px;
+            cursor: pointer;
+            color: var(--forest-mid);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+        }
+        
+        .nav-item.active {
+            color: var(--forest-dark);
+            background: linear-gradient(135deg, var(--sage) 0%, var(--forest-light) 100%);
+            color: white;
+            transform: translateY(-4px);
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
+            color: white;
+            padding: max(60px, env(safe-area-inset-top) + 40px) 24px 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(143, 188, 143, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(212, 165, 116, 0.1) 0%, transparent 50%);
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        
+        .header-subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        
+        .header-date {
+            font-size: 13px;
+            opacity: 0.75;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        /* Screens */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .container {
+            padding: 24px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--warm-white);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px var(--shadow);
+            border: 1px solid rgba(143, 188, 143, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+        }
+        
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--forest-dark);
+            margin-bottom: 16px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid.three-col {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
+            padding: 16px 12px;
+            border-radius: 16px;
+            border: 2px solid var(--sage);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--forest-mid);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--forest-dark);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            height: 16px;
+            background: rgba(143, 188, 143, 0.15);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--forest-light) 0%, var(--sage) 100%);
+            border-radius: 20px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Counters */
+        .counter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .counter {
+            background: var(--cream);
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .counter-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .counter-value {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--forest-dark);
+            margin: 8px 0;
+        }
+        
+        .counter-label {
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--forest-mid);
+            line-height: 1.2;
+        }
+        
+        /* Day List */
+        .day-item {
+            background: var(--warm-white);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(143, 188, 143, 0.15);
+        }
+        
+        .day-item:active {
+            transform: scale(0.98);
+            background: var(--cream);
+        }
+        
+        .day-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--forest-dark);
+            margin-bottom: 4px;
+        }
+        
+        .day-meals {
+            font-size: 13px;
+            color: var(--forest-mid);
+        }
+        
+        .day-completion {
+            text-align: right;
+        }
+        
+        .completion-percent {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--forest-light);
+        }
+        
+        /* Meal Tracking */
+        .meal-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--cream);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .meal-check:active {
+            transform: scale(0.98);
+        }
+        
+        .checkbox {
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--sage);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .meal-check.checked .checkbox {
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            border-color: var(--forest-light);
+        }
+        
+        .checkmark {
+            color: white;
+            font-size: 18px;
+            display: none;
+        }
+        
+        .meal-check.checked .checkmark {
+            display: block;
+            animation: pop 0.3s ease;
+        }
+        
+        @keyframes pop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .meal-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--charcoal);
+        }
+        
+        /* Counter Controls */
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .counter-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26, 71, 42, 0.2);
+        }
+        
+        .counter-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .counter-btn.minus {
+            background: linear-gradient(135deg, var(--terracotta) 0%, #c26a47 100%);
+        }
+        
+        .counter-display {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+            color: var(--forest-dark);
+        }
+        
+        /* Comments Section */
+        .comments-section {
+            margin-top: 20px;
+        }
+        
+        .comment-label {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--forest-dark);
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid var(--sage);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            resize: vertical;
+            background: var(--cream);
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--forest-light);
+        }
+        
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--sage);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            background: var(--cream);
+            margin-top: 8px;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: var(--forest-light);
+        }
+        
+        /* Shopping List */
+        .shopping-category {
+            margin-bottom: 24px;
+        }
+        
+        .category-title {
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--forest-dark);
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--warm-white);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .shopping-item:active {
+            transform: scale(0.98);
+        }
+        
+        .shopping-item.purchased {
+            background: var(--cream);
+            border-color: var(--sage);
+        }
+        
+        .shopping-item.purchased .item-name {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+        
+        .item-name {
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: var(--warm-white);
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            margin: 40px auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-mid) 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 24px 24px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .meal-section {
+            margin-bottom: 28px;
+        }
+        
+        .meal-type {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .meal-dishes {
+            margin-bottom: 12px;
+        }
+        
+        .dish {
+            padding: 8px 0;
+            font-weight: 600;
+            color: var(--forest-dark);
+        }
+        
+        .dish::before {
+            content: '🍽️ ';
+        }
+        
+        .meal-ingredients {
+            padding-left: 20px;
+        }
+        
+        .ingredient {
+            padding: 4px 0;
+            font-size: 14px;
+            color: var(--forest-mid);
+        }
+        
+        .ingredient::before {
+            content: '• ';
+        }
+        
+        .close-btn {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--forest-dark);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 0 0 24px 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:active {
+            background: var(--forest-mid);
+        }
+        
+        /* Reset button */
+        .reset-btn {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .reset-btn:active {
+            transform: scale(0.98);
+            background: #c26a47;
+        }
+        
+        /* Action button */
+        .action-btn {
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Week selector */
+        .week-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .week-btn {
+            padding: 12px 20px;
+            background: var(--warm-white);
+            border: 2px solid var(--sage);
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .week-btn.active {
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+            border-color: var(--forest-light);
+        }
+        
+        /* Month selector */
+        .month-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--warm-white);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+        
+        .month-nav-btn {
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .month-nav-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .month-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .month-display {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--forest-dark);
+            text-align: center;
+            flex: 1;
+        }
+        
+        /* PDF Upload Section */
+        .upload-section {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--warm-white) 100%);
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px dashed var(--sage);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .upload-input {
+            display: none;
+        }
+        
+        .upload-label {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+        
+        .upload-label:active {
+            transform: scale(0.98);
+        }
+        
+        .upload-status {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--forest-mid);
+        }
+        
+        .upload-status.processing {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .upload-status.success {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .upload-status.error {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--sage);
+            border-top-color: var(--forest-dark);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Report section */
+        .report-week {
+            background: var(--cream);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--sage);
+        }
+        
+        .report-week-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--forest-dark);
+            margin-bottom: 12px;
+        }
+        
+        .report-comment {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--charcoal);
+            white-space: pre-wrap;
+        }
+        
+        .report-comment.empty {
+            color: var(--forest-mid);
+            font-style: italic;
+        }
+        
+        /* KPI Tracking Styles */
+        .kpi-form {
+            background: var(--cream);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--forest-dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            background: var(--warm-white);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            height: 300px;
+            position: relative;
+        }
+        
+        .chart-canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* History Table */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--warm-white);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .history-table thead {
+            background: linear-gradient(135deg, var(--forest-light) 0%, var(--sage) 100%);
+            color: white;
+        }
+        
+        .history-table th {
+            padding: 14px 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .history-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--cream);
+            font-size: 14px;
+        }
+        
+        .history-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .history-table tbody tr:hover {
+            background: var(--cream);
+        }
+        
+        .change-positive {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .change-negative {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        .change-neutral {
+            color: var(--charcoal);
+            opacity: 0.5;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--forest-mid);
+            font-style: italic;
+        }
+    
+</style>
+</head>
+<body>
+
+    <!-- ERROR DISPLAY - remove after debugging -->
+    <div id="errBox" style="display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:red;color:white;font-size:13px;font-family:monospace;padding:10px;max-height:50vh;overflow:auto;word-break:break-all;"></div>
+
+    <div class="header">
+        <div class="header-content">
+            <h1>Mi Plan Nutricional</h1>
+            <div class="header-subtitle">Centro Equilátera · Adrián Vaca Nieto</div>
+            <div class="header-date" id="currentDate"></div>
+        </div>
+    </div>
+
+    <div class="screen active" id="dashboard">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">Información Personal</div>
+                <div class="stats-grid three-col">
+                    <div class="stat-item"><div class="stat-label">Peso</div><div class="stat-value" id="dashboardWeight">78,3 kg</div></div>
+                    <div class="stat-item"><div class="stat-label">% Grasa</div><div class="stat-value" id="dashboardFat">17,2%</div></div>
+                    <div class="stat-item"><div class="stat-label">Kcal/día</div><div class="stat-value">2.010</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Cumplimiento Semanal</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Semana Actual</span>
+                        <span id="weeklyCompletionPercent" style="font-weight:700;color:var(--forest-light)">0%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="weeklyCompletionBar" style="width:0%"></div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Cumplimiento Mensual</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span id="monthLabel">Mes Actual</span>
+                        <span id="monthlyCompletionPercent" style="font-weight:700;color:var(--forest-light)">0%</span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="monthlyCompletionBar" style="width:0%"></div></div>
+                </div>
+                <div class="counter-row">
+                    <div class="counter"><div class="counter-icon">🥤</div><div class="counter-value" id="monthlyCocas">0</div><div class="counter-label">Coca-Colas</div></div>
+                    <div class="counter"><div class="counter-icon">🍺</div><div class="counter-value" id="monthlyBeers">0</div><div class="counter-label">Cervezas</div></div>
+                    <div class="counter"><div class="counter-icon">📝</div><div class="counter-value" id="monthlyOthers">0</div><div class="counter-label">Otros</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="menu">
+        <div class="container">
+            <div class="month-selector">
+                <button class="month-nav-btn" onclick="changeMenuMonth(-1)">&#8249;</button>
+                <div class="month-display" id="menuMonthDisplay"></div>
+                <button class="month-nav-btn" onclick="changeMenuMonth(1)">&#8250;</button>
+            </div>
+            <div id="menuContainer"></div>
+        </div>
+    </div>
+
+    <div class="screen" id="shopping">
+        <div class="container">
+            <div class="month-selector">
+                <button class="month-nav-btn" onclick="changeShoppingMonth(-1)">&#8249;</button>
+                <div class="month-display" id="shoppingMonthDisplay"></div>
+                <button class="month-nav-btn" onclick="changeShoppingMonth(1)">&#8250;</button>
+            </div>
+            <button class="reset-btn" onclick="resetShoppingList()">🔄 Reiniciar Lista del Mes</button>
+            <div id="shoppingContainer"></div>
+        </div>
+    </div>
+
+    <div class="screen" id="tracking">
+        <div class="container">
+            <div class="month-selector">
+                <button class="month-nav-btn" onclick="changeTrackingMonth(-1)">&#8249;</button>
+                <div class="month-display" id="trackingMonthDisplay"></div>
+                <button class="month-nav-btn" onclick="changeTrackingMonth(1)">&#8250;</button>
+            </div>
+            <div class="week-selector" id="weekSelector"></div>
+            <div id="trackingContainer"></div>
+        </div>
+    </div>
+
+    <div class="screen" id="kpi">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">Registrar KPIs Mensual</div>
+                <div class="kpi-form">
+                    <div class="form-group">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" id="kpiDate">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Peso (kg)</label>
+                            <input type="number" id="kpiWeight" step="0.1" placeholder="78.3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">% Grasa</label>
+                            <input type="number" id="kpiFat" step="0.1" placeholder="17.2">
+                        </div>
+                    </div>
+                    <button class="action-btn" onclick="saveKPI()">💾 Guardar Registro</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Evolución Mensual</div>
+                <div class="chart-container">
+                    <canvas id="kpiChart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Histórico de Registros</div>
+                <div class="table-container">
+                    <table class="history-table">
+                        <thead><tr><th>Fecha</th><th>Peso</th><th>Δ Peso</th><th>% Grasa</th><th>Δ Grasa</th><th></th></tr></thead>
+                        <tbody id="kpiHistoryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="report">
+        <div class="container">
+            <div class="month-selector">
+                <button class="month-nav-btn" onclick="changeReportMonth(-1)">&#8249;</button>
+                <div class="month-display" id="reportMonthDisplay"></div>
+                <button class="month-nav-btn" onclick="changeReportMonth(1)">&#8250;</button>
+            </div>
+            <div class="card">
+                <div class="card-title">Resumen Mensual</div>
+                <div class="stats-grid" style="grid-template-columns:1fr">
+                    <div class="stat-item"><div class="stat-label">Cumplimiento Total</div><div class="stat-value" id="reportMonthlyPercent">0%</div></div>
+                </div>
+                <div class="stats-grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:12px">
+                    <div class="stat-item"><div class="stat-label">Coca-Colas</div><div class="stat-value" id="reportCocas">0</div></div>
+                    <div class="stat-item"><div class="stat-label">Cervezas</div><div class="stat-value" id="reportBeers">0</div></div>
+                    <div class="stat-item"><div class="stat-label">Otros</div><div class="stat-value" id="reportOthers">0</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Comentarios por Semana</div>
+                <div id="reportComments"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen" id="settings">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">⚙️ Configuración</div>
+                <button class="reset-btn" id="resetAllDataBtn">🔄 Reiniciar Todos los Datos</button>
+                <p style="font-size:13px;color:var(--forest-mid);margin-top:-10px">⚠️ Eliminará todos tus registros y seguimientos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="dayModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalDayName"></div>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <button class="close-btn" onclick="closeModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <div class="nav-bar" id="mainNav">
+        <div class="nav-item active" data-screen="dashboard"><div class="nav-icon">📊</div><div>Home</div></div>
+        <div class="nav-item" data-screen="menu"><div class="nav-icon">📅</div><div>Menú</div></div>
+        <div class="nav-item" data-screen="shopping"><div class="nav-icon">🛒</div><div>Compra</div></div>
+        <div class="nav-item" data-screen="tracking"><div class="nav-icon">✅</div><div>Seguim.</div></div>
+        <div class="nav-item" data-screen="kpi"><div class="nav-icon">📈</div><div>KPIs</div></div>
+        <div class="nav-item" data-screen="report"><div class="nav-icon">📋</div><div>Reporte</div></div>
+        <div class="nav-item" data-screen="settings"><div class="nav-icon">⚙️</div><div>Config.</div></div>
+    </div>
+
+<script>
+window.onerror = function(msg, src, line, col, err) {
+    var box = document.getElementById('errBox');
+    if (box) {
+        box.style.display = 'block';
+        box.innerHTML += '<b>ERROR:</b> ' + msg + '<br><b>Línea:</b> ' + line + '<br><b>Col:</b> ' + col + '<br>' + (err && err.stack ? err.stack.substring(0,300) : '') + '<hr>';
+    }
+    return false;
+};
+
+const weeklyPlan = [
+            {
+                id: 'lunes',
+                day: 'Lunes',
+                sport: null,
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['Café con leche', 'Bol de kéfir con cereales, arándanos y cacahuete en polvo'],
+                        ingredients: ['Café al gusto', 'Leche desnatada 200ml', 'Kéfir natural Hacendado 250g', 'Arándanos 105g', 'Muesli Crunchy 0% azúcares 25g', 'Cacahuete +proteínas en polvo 20g'],
+                        note: 'Mezclar el kéfir con el cacahuete en polvo y añadir los cereales y los arándanos'
+                    },
+                    {
+                        type: 'Almuerzo',
+                        dishes: ['Tortitas de legumbre'],
+                        ingredients: ['Tortitas de legumbre 30g (4 tortitas)']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Salteado de garbanzos con pollo y tomates', 'Mandarina'],
+                        ingredients: ['Garbanzos conserva 200g', 'Pollo pechuga sin piel 150g', 'Tomate cherry 165g (16 uds)', 'Mandarina 190g', 'Pan integral 40g', 'AOVE 2 cdas soperas'],
+                        note: 'Aclarar garbanzos, dorar ajo y pollo con especias, añadir tomates y garbanzos, saltear. Orégano, ajo, sal y pimienta. Tiempo: 15-20 min'
+                    },
+                    {
+                        type: 'Merienda',
+                        dishes: ['Plátano y nueces'],
+                        ingredients: ['Plátano 240g (1 unidad grande)', 'Nueces 40g (5 unidades)']
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['Revuelto de setas', 'Kiwis'],
+                        ingredients: ['Huevo de gallina 120g (2 uds pequeñas)', 'Claras pasteurizadas 100ml', 'Setas congeladas Findus 200g', 'Kiwi 360g (2 uds medianas)', 'Pan integral 40g', 'AOVE 1 cda sopera'],
+                        note: 'Descongelar setas, dorar con sal y pimienta, añadir huevos y claras batidas, cuajar al gusto. Tiempo: 15 min'
+                    }
+                ]
+            },
+            {
+                id: 'martes',
+                day: 'Martes',
+                sport: 'Gimnasia de mantenimiento',
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['Café con leche', 'Bol de yogur con frutas'],
+                        ingredients: ['Café al gusto', 'Leche desnatada 200ml', 'Yogur proteico 0% M.G. 200g', 'Plátano 240g (1 unidad grande)', 'Kiwi 180g (1 unidad mediana)', 'Nueces 40g (5 unidades)']
+                    },
+                    {
+                        type: 'Almuerzo',
+                        dishes: ['Tortitas de maíz'],
+                        ingredients: ['Tortitas de maíz 30g (4 tortitas)']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Salteado de quinoa, pavo y pimientos', 'Mandarina'],
+                        ingredients: ['Quinoa blanca y roja cocida (vasito microondas) 125g', 'Pavo pechuga sin piel 200g', 'Pimiento rojo y verde congelado 200g', 'Mandarina 190g', 'Pan integral 60g', 'AOVE 1.5 cdas soperas'],
+                        note: 'Dorar pavo salpimentado, añadir pimientos descongelados, incorporar quinoa y mezclar. Sal, pimienta, orégano y ajo en polvo. Tiempo: 15 min'
+                    },
+                    {
+                        type: 'Merienda',
+                        dishes: ['Manzana y almendras'],
+                        ingredients: ['Manzana 260g (1 unidad grande)', 'Almendra pelada 20g (10-12 unidades)']
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['Solomillo de cerdo a la plancha', 'Ensalada de espárragos', 'Kiwis'],
+                        ingredients: ['Solomillo de cerdo sin grasa 200g (6 ruedas)', 'Canónigos 50g', 'Espárragos blancos conserva 75g (3 unidades)', 'Kiwi 360g (2 uds medianas)', 'Pan integral 40g', 'AOVE 1.5 cdas soperas'],
+                        note: 'Hacer solomillo a la plancha con pimienta. Lavar canónigos, trocear espárragos, aliñar con aceite, vinagre y orégano. Tiempo: 15-20 min'
+                    }
+                ]
+            },
+            {
+                id: 'miercoles',
+                day: 'Miércoles',
+                sport: null,
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['Café con leche', 'Bol de kéfir con cereales, arándanos y cacahuete en polvo'],
+                        ingredients: ['Café al gusto', 'Leche desnatada 200ml', 'Kéfir natural Hacendado 250g', 'Arándanos 105g', 'Muesli Crunchy 0% azúcares 25g', 'Cacahuete +proteínas en polvo 20g'],
+                        note: 'Mezclar el kéfir con el cacahuete en polvo y añadir los cereales y los arándanos'
+                    },
+                    {
+                        type: 'Almuerzo',
+                        dishes: ['Tortitas de legumbre'],
+                        ingredients: ['Tortitas de legumbre 30g (4 tortitas)']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Ñoquis con pollo y verduras', 'Mandarina'],
+                        ingredients: ['Gnocchi 180g', 'Queso Mozzarella rallado 45g', 'Pollo pechuga sin piel 150g', 'Tomate cherry 115g (12 uds)', 'Mandarina 190g', 'Pan integral 60g', 'AOVE 0.5 cda sopera'],
+                        note: 'Cocer ñoquis, hacer pollo con especias y tomates, mezclar con ñoquis y queso. Salsa pesto 15g, albahaca, ajo, pimienta, orégano. Tiempo: 15-20 min'
+                    },
+                    {
+                        type: 'Merienda',
+                        dishes: ['Plátano y nueces'],
+                        ingredients: ['Plátano 240g (1 unidad grande)', 'Nueces 40g (5 unidades)']
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['Merluza al papillote', 'Piña'],
+                        ingredients: ['Merluza 180-200g', 'Zanahoria 60g', 'Cebolla 30g', 'Calabacín 100g', 'Piña sin piel 240g (2 rodajas)', 'Pan integral 60g', 'AOVE 2 cdas soperas'],
+                        note: 'Colocar verduras y merluza en papel de aluminio con aceite y especias. Airfryer 180°C, 10-12 min. Limón, ajo en polvo, pimienta y perejil. Tiempo: 20 min'
+                    }
+                ]
+            },
+            {
+                id: 'jueves',
+                day: 'Jueves',
+                sport: 'Gimnasia de mantenimiento',
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['Café con leche', 'Bol de queso fresco batido con frutas'],
+                        ingredients: ['Café al gusto', 'Leche desnatada 200ml', 'Queso fresco batido desnatado 200g', 'Plátano 240g (1 unidad grande)', 'Arándanos 105g', 'Nueces 40g (5 unidades)']
+                    },
+                    {
+                        type: 'Almuerzo',
+                        dishes: ['Tortitas de maíz'],
+                        ingredients: ['Tortitas de maíz 30g (4 tortitas)']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Lentejas con sofrito y pollo', 'Mandarina'],
+                        ingredients: ['Lentejas conserva 200g', 'Pollo pechuga sin piel 150g', 'Pimiento rojo y verde congelado 150g', 'Mandarina 190g', 'Pan integral 40g', 'AOVE 2 cdas soperas'],
+                        note: 'Aclarar lentejas, sofreír pimientos con ajo, añadir pollo, incorporar lentejas y albahaca. Sal, ajo, pimienta y albahaca. Tiempo: 15-45 min'
+                    },
+                    {
+                        type: 'Merienda',
+                        dishes: ['Manzana y almendras'],
+                        ingredients: ['Manzana 260g (1 unidad grande)', 'Almendra pelada 20g (10-12 unidades)']
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['Hamburguesa casera', 'Yogur proteico y piña'],
+                        ingredients: ['Pan de hamburguesa 60g (2 rebanadas)', 'Carne picada ternera 150g', 'Canónigos al gusto', 'Tomate 30g', 'Pepinillos 2-4 uds', 'Yogur proteico 0% M.G. 120g', 'Piña sin piel 120g (1 rodaja)', 'AOVE 2 cdas soperas'],
+                        note: 'Salpimentar carne, dar forma y hacer en sartén antiadherente. Preparar con lechuga, tomate y pepinillo. Opcional: kétchup zero. Tiempo: 20 min'
+                    }
+                ]
+            },
+            {
+                id: 'viernes',
+                day: 'Viernes',
+                sport: null,
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['Café con leche', 'Bol de kéfir con cereales, arándanos y cacahuete en polvo'],
+                        ingredients: ['Café al gusto', 'Leche desnatada 200ml', 'Kéfir natural Hacendado 250g', 'Arándanos 105g', 'Muesli Crunchy 0% azúcares 25g', 'Cacahuete +proteínas en polvo 20g'],
+                        note: 'Mezclar el kéfir con el cacahuete en polvo y añadir los cereales y los arándanos'
+                    },
+                    {
+                        type: 'Almuerzo',
+                        dishes: ['Tortitas de legumbre'],
+                        ingredients: ['Tortitas de legumbre 30g (4 tortitas)']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Ensalada de patata, huevo y atún', 'Manzana'],
+                        ingredients: ['Patata cocida conserva 200g', 'Atún conserva al natural 120g (1 lata)', 'Huevo de gallina 120g (2 uds pequeñas)', 'Espárragos blancos conserva 150g (6 uds)', 'Tomate cherry 115g (12 uds)', 'Lechuga 75g', 'Manzana 260g', 'Pan integral 40g', 'AOVE 1 cda sopera'],
+                        note: 'Aclarar patatas, cocer huevo 10 min, mezclar todo en ensaladera con aceite, vinagre, pimienta y sal. Servir frío. Tiempo: 15 min'
+                    },
+                    {
+                        type: 'Merienda',
+                        dishes: ['Plátano y nueces'],
+                        ingredients: ['Plátano 240g (1 unidad grande)', 'Nueces 40g (5 unidades)']
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['Puré de calabaza', 'Filetes de ternera a la plancha', 'Piña y yogur proteico'],
+                        ingredients: ['Crema de calabaza y zanahoria Hacendado 350g (1 envase)', 'Ternera 150g', 'Piña sin piel 240g (2 rodajas)', 'Yogur proteico 0% M.G. 120g', 'AOVE 1 cda sopera'],
+                        note: 'Hacer filetes a la plancha con aceite, sal y pimienta. Servir junto al puré. Tiempo: 10 min'
+                    }
+                ]
+            },
+            {
+                id: 'sabado',
+                day: 'Sábado',
+                sport: null,
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['Café con leche', 'Bol de queso fresco batido con frutas'],
+                        ingredients: ['Café al gusto', 'Leche desnatada 200ml', 'Queso fresco batido desnatado 200g', 'Plátano 240g (1 unidad grande)', 'Arándanos 105g', 'Nueces 40g (5 unidades)']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Arroz con champiñones', 'Contramuslo de pollo a la plancha', 'Manzana'],
+                        ingredients: ['Arroz integral cocido Brillante Sabroz 125g (1 vasito)', 'Cebolla 30g', 'Champiñones 200g (6-10 uds)', 'Contramuslo de pollo deshuesado sin piel 250g', 'Manzana 260g', 'AOVE 1 cda sopera'],
+                        note: 'Dorar ajo, cebolla y champiñones con sal y pimienta. Añadir arroz cocido. Contramuslo a la plancha con sal, pimienta y tomillo. 1-2 dientes de ajo, laurel y tomillo. Tiempo: 15-20 min'
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['CENA LIBRE'],
+                        ingredients: ['A tu elección']
+                    }
+                ]
+            },
+            {
+                id: 'domingo',
+                day: 'Domingo',
+                sport: null,
+                meals: [
+                    {
+                        type: 'Desayuno',
+                        dishes: ['DESAYUNO LIBRE'],
+                        ingredients: ['A tu elección']
+                    },
+                    {
+                        type: 'Comida',
+                        dishes: ['Puré de verduras', 'Muslo de pollo', 'Plátano'],
+                        ingredients: ['Patata 140g (2 uds pequeñas)', 'Zanahoria 60g', 'Calabacín 100g', 'Pollo muslo sin piel 200g (1 muslito mediano)', 'Plátano 240g', 'Pan integral 40g', 'AOVE 1.5 cdas soperas'],
+                        note: 'Cocer verduras troceadas en cazuela con especias y agua 20-30 min. Triturar. Asar muslo en airfryer 20 min por lado a 190°C. Cúrcuma, sal, pimienta, comino. Tiempo: 30-40 min'
+                    },
+                    {
+                        type: 'Cena',
+                        dishes: ['Fajitas de pollo'],
+                        ingredients: ['Fajitas integrales 108g (3 unidades)', 'Pollo pechuga sin piel 150g', 'Salteado verduras asadas Hacendado 100g', 'Guacamole Hacendado 95% aguacate 80g', 'Pan integral 40g', 'AOVE 1.5 cdas soperas'],
+                        note: 'Cortar pollo, salpimentar, hacer en airfryer o sartén 15 min a 190°C. Calentar fajitas y rellenar con pollo, guacamole y verduras. Sal, ajo en polvo, albahaca, orégano. Tiempo: 20 min'
+                    }
+                ]
+            }
+        ];
+
+const shoppingList = {
+            'Verduras y Hortalizas': ['Ajo', 'Cebolla', 'Zanahoria', 'Calabacín', 'Canónigos/Lechuga', 'Tomates cherry/Tomate', 'Champiñones', 'Espárrago blanco conserva', 'Pimientos picados congelados', 'Crema de calabaza y zanahoria Hacendado', 'Salteado verduras asadas Hacendado', 'Setas congeladas Findus'],
+            'Frutas': ['Limón', 'Kiwis', 'Arándanos', 'Mandarinas', 'Manzanas', 'Plátanos', 'Piña'],
+            'Granos, Cereales y Farináceos': ['Pan integral de barra', 'Tortitas de legumbre/maíz', 'Pasta fresca gnocchi Hacendado', 'Quinoa blanca y roja cocida (vasitos)', 'Arroz integral Brillante Sabroz', 'Muesli Crunchy Hacendado 0% azúcares', 'Fajitas integrales (tortillas de trigo)', 'Pan de hamburguesa'],
+            'Legumbres, Tubérculos y Frutos Secos': ['Nueces', 'Almendras', 'Patata cocida conserva', 'Lentejas conserva', 'Garbanzos conserva'],
+            'Carnes': ['Pechuga de pollo/pavo sin piel', 'Pavo pechuga sin piel', 'Filetes de ternera', 'Solomillo de cerdo sin grasa', 'Contramuslo de pollo deshuesado sin piel', 'Pollo muslo sin piel', 'Carne picada de ternera'],
+            'Pescado': ['Merluza', 'Atún conserva al natural'],
+            'Conservas de Pescado': ['Atún conserva al natural'],
+            'Lácteos, Huevos y Quesos': ['Huevo de gallina', 'Claras pasteurizadas', 'Leche desnatada', 'Kéfir natural sabor suave Hacendado', 'Yogur proteico 0% M.G.', 'Queso fresco batido desnatado', 'Queso Mozzarella rallado'],
+            'Otros': ['AOVE (aceite de oliva virgen extra)', 'Café', 'Guacamole Hacendado 95% aguacate', 'Cacahuete +proteínas en polvo desgrasado', 'Salsa pesto', 'Pepinillos', 'Especias al gusto']
+        };
+
+
+
+        // State management
+        let weeklyData = {};
+        let purchased = {};
+        let currentWeek = 1;
+        let kpiData = [];
+        let currentMenuMonth = null; // Format: "YYYY-MM"
+        let currentTrackingMonth = null; // Format: "YYYY-MM"
+        let currentShoppingMonth = null; // Format: "YYYY-MM"
+        let currentReportMonth = null; // Format: "YYYY-MM"
+        let customMenus = {}; // Store custom menus by month: { "YYYY-MM": weeklyPlan }
+        let customShoppingLists = {}; // Store custom shopping lists by month: { "YYYY-MM": shoppingList }
+
+        // Update current date in header
+        function updateHeaderDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('es-ES', options);
+            document.getElementById('currentDate').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        }
+
+        // Get current month info
+        function getCurrentMonthInfo() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            return {
+                year: year,
+                month: month,
+                monthName: monthNames[month],
+                firstDay: new Date(year, month, 1),
+                lastDay: new Date(year, month + 1, 0)
+            };
+        }
+
+        // Get week number within month
+        function getWeekOfMonth(date) {
+            const monthInfo = getCurrentMonthInfo();
+            const firstDay = monthInfo.firstDay;
+            const daysDiff = Math.floor((date - firstDay) / (1000 * 60 * 60 * 24));
+            return Math.floor(daysDiff / 7) + 1;
+        }
+
+        // Initialize data from localStorage
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('nutritionDataV3');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    weeklyData = data.weeklyData || {};
+                    purchased = data.purchased || {};
+                    kpiData = data.kpiData || [];
+                    customMenus = data.customMenus || {};
+                    customShoppingLists = data.customShoppingLists || {};
+                }
+            } catch(e) {
+                console.warn('localStorage not available:', e);
+                weeklyData = {}; purchased = {}; kpiData = []; customMenus = {}; customShoppingLists = {};
+            }
+            
+            // Initialize current months to current date
+            const now = new Date();
+            currentMenuMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            currentTrackingMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            currentShoppingMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            currentReportMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('nutritionDataV3', JSON.stringify({
+                    weeklyData,
+                    purchased,
+                    kpiData,
+                    customMenus,
+                    customShoppingLists
+                }));
+            } catch(e) {
+                console.warn('Could not save to localStorage:', e);
+            }
+        }
+
+        // KPI Management
+        function saveKPI() {
+            const date = document.getElementById('kpiDate').value;
+            const weight = parseFloat(document.getElementById('kpiWeight').value);
+            const fat = parseFloat(document.getElementById('kpiFat').value);
+            
+            if (!date || isNaN(weight) || isNaN(fat)) {
+                alert('Por favor completa todos los campos con valores válidos');
+                return;
+            }
+            
+            // Check if date already exists
+            const existingIndex = kpiData.findIndex(entry => entry.date === date);
+            
+            if (existingIndex >= 0) {
+                if (confirm('Ya existe un registro para esta fecha. ¿Deseas actualizarlo?')) {
+                    kpiData[existingIndex] = { date, weight, fat };
+                } else {
+                    return;
+                }
+            } else {
+                kpiData.push({ date, weight, fat });
+            }
+            
+            // Sort by date
+            kpiData.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            saveData();
+            renderKPIScreen();
+            
+            // Update dashboard with latest values
+            updateDashboardKPIs();
+            
+            // Clear form
+            document.getElementById('kpiWeight').value = '';
+            document.getElementById('kpiFat').value = '';
+            
+            alert('Registro guardado exitosamente');
+        }
+
+        function deleteKPI(date) {
+            if (confirm('¿Estás seguro de eliminar este registro?')) {
+                kpiData = kpiData.filter(entry => entry.date !== date);
+                saveData();
+                renderKPIScreen();
+            }
+        }
+
+        function renderKPIScreen() {
+            // Wait a moment for the DOM to be ready
+            setTimeout(() => {
+                renderKPIChart();
+                renderKPITable();
+            }, 100);
+        }
+
+        function renderKPIChart() { try {
+            const canvas = document.getElementById('kpiChart');
+            if (!canvas) return;
+            
+            if (kpiData.length === 0) {
+                const container = canvas.parentElement;
+                container.innerHTML = '<div class="empty-state">No hay datos para mostrar. Añade tu primer registro arriba.</div>';
+                container.insertAdjacentHTML('beforeend', '<canvas id="kpiChart" class="chart-canvas"></canvas>');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            
+            const width = canvas.parentElement.clientWidth;
+            const height = 300;
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Margins - aumentados para dar más espacio
+            const margin = { top: 50, right: 70, bottom: 60, left: 70 };
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+            
+            // Get data
+            const weights = kpiData.map(entry => entry.weight);
+            const fats = kpiData.map(entry => entry.fat);
+            const labels = kpiData.map(entry => {
+                const d = new Date(entry.date + 'T00:00:00');
+                return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            });
+            
+            // Scales with padding
+            const minWeight = Math.floor(Math.min(...weights)) - 1;
+            const maxWeight = Math.ceil(Math.max(...weights)) + 1;
+            const minFat = Math.floor(Math.min(...fats)) - 1;
+            const maxFat = Math.ceil(Math.max(...fats)) + 1;
+            
+            const xStep = chartWidth / Math.max(kpiData.length - 1, 1);
+            
+            function scaleWeight(value) {
+                return chartHeight - ((value - minWeight) / (maxWeight - minWeight)) * chartHeight;
+            }
+            
+            function scaleFat(value) {
+                return chartHeight - ((value - minFat) / (maxFat - minFat)) * chartHeight;
+            }
+            
+            ctx.save();
+            ctx.translate(margin.left, margin.top);
+            
+            // Grid lines - horizontal
+            ctx.strokeStyle = 'rgba(143, 188, 143, 0.2)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = (chartHeight / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(chartWidth, y);
+                ctx.stroke();
+            }
+            
+            // Draw weight line with gradient
+            const weightGradient = ctx.createLinearGradient(0, 0, 0, chartHeight);
+            weightGradient.addColorStop(0, 'rgba(45, 95, 63, 0.2)');
+            weightGradient.addColorStop(1, 'rgba(45, 95, 63, 0.05)');
+            
+            ctx.fillStyle = weightGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, chartHeight);
+            weights.forEach((weight, i) => {
+                const x = i * xStep;
+                const y = scaleWeight(weight);
+                if (i === 0) ctx.lineTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.lineTo((weights.length - 1) * xStep, chartHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw weight line
+            ctx.strokeStyle = '#2d5f3f';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            weights.forEach((weight, i) => {
+                const x = i * xStep;
+                const y = scaleWeight(weight);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            
+            // Draw weight points
+            weights.forEach((weight, i) => {
+                const x = i * xStep;
+                const y = scaleWeight(weight);
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#2d5f3f';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+            
+            // Draw fat line with gradient
+            const fatGradient = ctx.createLinearGradient(0, 0, 0, chartHeight);
+            fatGradient.addColorStop(0, 'rgba(212, 117, 78, 0.2)');
+            fatGradient.addColorStop(1, 'rgba(212, 117, 78, 0.05)');
+            
+            ctx.fillStyle = fatGradient;
+            ctx.beginPath();
+            ctx.moveTo(0, chartHeight);
+            fats.forEach((fat, i) => {
+                const x = i * xStep;
+                const y = scaleFat(fat);
+                if (i === 0) ctx.lineTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.lineTo((fats.length - 1) * xStep, chartHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw fat line
+            ctx.strokeStyle = '#d4754e';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            fats.forEach((fat, i) => {
+                const x = i * xStep;
+                const y = scaleFat(fat);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            
+            // Draw fat points
+            fats.forEach((fat, i) => {
+                const x = i * xStep;
+                const y = scaleFat(fat);
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#d4754e';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+            
+            // X axis labels
+            ctx.fillStyle = '#2b2b2b';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            labels.forEach((label, i) => {
+                const x = i * xStep;
+                ctx.fillText(label, x, chartHeight + 25);
+            });
+            
+            // Y axis labels (weight - left)
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#2d5f3f';
+            ctx.font = 'bold 11px sans-serif';
+            for (let i = 0; i <= 4; i++) {
+                const value = minWeight + ((maxWeight - minWeight) / 4) * (4 - i);
+                const y = (chartHeight / 4) * i;
+                ctx.fillText(value.toFixed(0) + ' kg', -15, y + 4);
+            }
+            
+            // Y axis labels (fat - right)
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#d4754e';
+            for (let i = 0; i <= 4; i++) {
+                const value = minFat + ((maxFat - minFat) / 4) * (4 - i);
+                const y = (chartHeight / 4) * i;
+                ctx.fillText(value.toFixed(0) + '%', chartWidth + 15, y + 4);
+            }
+            
+            // Legend
+            ctx.restore();
+            const legendY = 15;
+            
+            // Peso legend
+            ctx.fillStyle = '#2d5f3f';
+            ctx.fillRect(20, legendY, 20, 3);
+            ctx.fillStyle = '#2b2b2b';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('Peso', 45, legendY + 4);
+            
+            // Fat legend
+            ctx.fillStyle = '#d4754e';
+            ctx.fillRect(width - 80, legendY, 20, 3);
+            ctx.fillStyle = '#2b2b2b';
+            ctx.textAlign = 'left';
+            ctx.fillText('Grasa', width - 55, legendY + 4);
+            } catch(e) { console.warn("Chart error:", e); }
+        }
+
+        function renderKPITable() {
+            const tbody = document.getElementById('kpiHistoryBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            if (kpiData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hay registros históricos</td></tr>';
+                return;
+            }
+            
+            kpiData.slice().reverse().forEach((entry, index) => {
+                const actualIndex = kpiData.length - 1 - index;
+                const prevEntry = actualIndex > 0 ? kpiData[actualIndex - 1] : null;
+                
+                let weightChange = '';
+                let weightChangeClass = 'change-neutral';
+                let fatChange = '';
+                let fatChangeClass = 'change-neutral';
+                
+                if (prevEntry) {
+                    const weightDiff = entry.weight - prevEntry.weight;
+                    const weightPercent = ((weightDiff / prevEntry.weight) * 100).toFixed(1);
+                    
+                    if (weightDiff < 0) {
+                        weightChangeClass = 'change-positive';
+                        weightChange = `⬇️ ${Math.abs(weightDiff).toFixed(1)} kg (${Math.abs(weightPercent)}%)`;
+                    } else if (weightDiff > 0) {
+                        weightChangeClass = 'change-negative';
+                        weightChange = `⬆️ +${weightDiff.toFixed(1)} kg (+${weightPercent}%)`;
+                    } else {
+                        weightChange = '— Sin cambio';
+                    }
+                    
+                    const fatDiff = entry.fat - prevEntry.fat;
+                    const fatPercent = ((fatDiff / prevEntry.fat) * 100).toFixed(1);
+                    
+                    if (fatDiff < 0) {
+                        fatChangeClass = 'change-positive';
+                        fatChange = `⬇️ ${Math.abs(fatDiff).toFixed(1)}% (${Math.abs(fatPercent)}%)`;
+                    } else if (fatDiff > 0) {
+                        fatChangeClass = 'change-negative';
+                        fatChange = `⬆️ +${fatDiff.toFixed(1)}% (+${fatPercent}%)`;
+                    } else {
+                        fatChange = '— Sin cambio';
+                    }
+                } else {
+                    weightChange = '— Primer registro';
+                    fatChange = '— Primer registro';
+                }
+                
+                const d = new Date(entry.date + 'T00:00:00');
+                const dateStr = d.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${dateStr}</strong></td>
+                    <td>${entry.weight.toFixed(1)} kg</td>
+                    <td class="${weightChangeClass}">${weightChange}</td>
+                    <td>${entry.fat.toFixed(1)}%</td>
+                    <td class="${fatChangeClass}">${fatChange}</td>
+                    <td><button onclick="deleteKPI('${entry.date}')" style="background: var(--terracotta); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">🗑️</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Get or create week data
+        function getWeekData(weekNum) {
+            if (!weeklyData[weekNum]) {
+                weeklyData[weekNum] = {
+                    days: {},
+                    comment: ''
+                };
+                
+                weeklyPlan.forEach(day => {
+                    weeklyData[weekNum].days[day.id] = {
+                        completion: {},
+                        counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                        comment: ''
+                    };
+                    
+                    day.meals.forEach(meal => {
+                        weeklyData[weekNum].days[day.id].completion[meal.type] = false;
+                    });
+                });
+            }
+            return weeklyData[weekNum];
+        }
+
+        // Calculate weekly completion
+        function calculateWeeklyCompletion(weekNum) {
+            const weekData = getWeekData(weekNum);
+            let total = 0;
+            let completed = 0;
+            
+            weeklyPlan.forEach(day => {
+                day.meals.forEach(meal => {
+                    total++;
+                    if (weekData.days[day.id]?.completion[meal.type]) completed++;
+                });
+            });
+            
+            return total > 0 ? Math.round((completed / total) * 100) : 0;
+        }
+
+        // Calculate monthly completion
+        function calculateMonthlyCompletion() {
+            const monthInfo = getCurrentMonthInfo();
+            const totalWeeks = Math.ceil(monthInfo.lastDay.getDate() / 7);
+            
+            let totalMeals = 0;
+            let completedMeals = 0;
+            
+            for (let week = 1; week <= totalWeeks; week++) {
+                const weekData = getWeekData(week);
+                weeklyPlan.forEach(day => {
+                    day.meals.forEach(meal => {
+                        totalMeals++;
+                        if (weekData.days[day.id]?.completion[meal.type]) completedMeals++;
+                    });
+                });
+            }
+            
+            return totalMeals > 0 ? Math.round((completedMeals / totalMeals) * 100) : 0;
+        }
+
+        // Get monthly counters
+        function getMonthlyCounters() {
+            const monthInfo = getCurrentMonthInfo();
+            const totalWeeks = Math.ceil(monthInfo.lastDay.getDate() / 7);
+            
+            let cocas = 0, beers = 0, others = 0;
+            
+            for (let week = 1; week <= totalWeeks; week++) {
+                const weekData = getWeekData(week);
+                weeklyPlan.forEach(day => {
+                    const dayData = weekData.days[day.id];
+                    if (dayData) {
+                        cocas += dayData.counters.cocas || 0;
+                        beers += dayData.counters.beers || 0;
+                        others += dayData.counters.others || 0;
+                    }
+                });
+            }
+            
+            return { cocas, beers, others };
+        }
+
+        // Update dashboard
+        function updateDashboard() {
+            const monthInfo = getCurrentMonthInfo();
+            
+            // Weekly completion
+            const weeklyPercent = calculateWeeklyCompletion(currentWeek);
+            document.getElementById('weeklyCompletionPercent').textContent = weeklyPercent + '%';
+            document.getElementById('weeklyCompletionBar').style.width = weeklyPercent + '%';
+            
+            // Monthly completion
+            const monthlyPercent = calculateMonthlyCompletion();
+            document.getElementById('monthLabel').textContent = monthInfo.monthName;
+            document.getElementById('monthlyCompletionPercent').textContent = monthlyPercent + '%';
+            document.getElementById('monthlyCompletionBar').style.width = monthlyPercent + '%';
+            
+            // Monthly counters
+            const counters = getMonthlyCounters();
+            document.getElementById('monthlyCocas').textContent = counters.cocas;
+            document.getElementById('monthlyBeers').textContent = counters.beers;
+            document.getElementById('monthlyOthers').textContent = counters.others;
+            
+            // Update KPIs with latest data
+            updateDashboardKPIs();
+        }
+        
+        // Update dashboard KPIs from latest entry
+        function updateDashboardKPIs() {
+            if (kpiData.length > 0) {
+                const latest = kpiData[kpiData.length - 1];
+                const weightEl = document.getElementById('dashboardWeight');
+                const fatEl = document.getElementById('dashboardFat');
+                if (weightEl) weightEl.textContent = latest.weight.toFixed(1) + ' kg';
+                if (fatEl) fatEl.textContent = latest.fat.toFixed(1) + '%';
+            }
+        }
+
+        // Screen switching
+        function switchScreen(screenName, el) {
+            try {
+                document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+                var target = document.getElementById(screenName);
+                if (target) target.classList.add('active');
+                document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+                document.querySelectorAll('[data-screen="' + screenName + '"]').forEach(function(n) { n.classList.add('active'); });
+            } catch(e) { console.error('switchScreen DOM error:', e); }
+            try { if (screenName === 'menu') renderMenu(); } catch(e) { console.error('renderMenu error:', e); }
+            try { if (screenName === 'shopping') renderShopping(); } catch(e) { console.error('renderShopping error:', e); }
+            try { if (screenName === 'tracking') renderTracking(); } catch(e) { console.error('renderTracking error:', e); }
+            try { if (screenName === 'dashboard') updateDashboard(); } catch(e) { console.error('updateDashboard error:', e); }
+            try { if (screenName === 'report') renderReport(); } catch(e) { console.error('renderReport error:', e); }
+            try {
+                if (screenName === 'kpi') {
+                    var today = new Date().toISOString().split('T')[0];
+                    document.getElementById('kpiDate').value = today;
+                    renderKPIScreen();
+                }
+            } catch(e) { console.error('renderKPI error:', e); }
+        }
+        function renderMenu() {
+            // Update month display
+            document.getElementById('menuMonthDisplay').textContent = formatMonthDisplay(currentMenuMonth);
+            
+            const container = document.getElementById('menuContainer');
+            container.innerHTML = '';
+            
+            const menu = getMenuForMonth(currentMenuMonth);
+            const monthKey = currentMenuMonth;
+            
+            menu.forEach(day => {
+                const weekDataKey = `${monthKey}-week${currentWeek}`;
+                const weekData = weeklyData[weekDataKey] || { days: {} };
+                
+                if (!weekData.days[day.id]) {
+                    weekData.days[day.id] = {
+                        completion: {},
+                        counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                        comment: ''
+                    };
+                    day.meals.forEach(meal => {
+                        weekData.days[day.id].completion[meal.type] = false;
+                    });
+                }
+                
+                let completed = 0;
+                day.meals.forEach(meal => {
+                    if (weekData.days[day.id]?.completion[meal.type]) completed++;
+                });
+                const percent = day.meals.length > 0 ? Math.round((completed / day.meals.length) * 100) : 0;
+                
+                const item = document.createElement('div');
+                item.className = 'day-item';
+                item.onclick = () => showDayDetails(day);
+                item.innerHTML = `
+                    <div>
+                        <div class="day-name">${day.day}</div>
+                        <div class="day-meals">${day.meals.length} comidas</div>
+                    </div>
+                    <div class="day-completion">
+                        <div class="completion-percent">${percent}%</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Show day details in modal
+        function showDayDetails(day) {
+            document.getElementById('modalDayName').textContent = day.day;
+            const body = document.getElementById('modalBody');
+            body.innerHTML = '';
+            
+            // Show sport if present
+            if (day.sport) {
+                const sportBadge = document.createElement('div');
+                sportBadge.style.cssText = 'background: linear-gradient(135deg, #2d5f3f, #4a8b5e); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px;';
+                sportBadge.innerHTML = '🏋️ ' + day.sport;
+                body.appendChild(sportBadge);
+            }
+            
+            day.meals.forEach(meal => {
+                const section = document.createElement('div');
+                section.className = 'meal-section';
+                section.innerHTML = `
+                    <div class="meal-type">${meal.type}</div>
+                    <div class="meal-dishes">
+                        ${meal.dishes.map(d => `<div class="dish">${d}</div>`).join('')}
+                    </div>
+                    <div class="meal-ingredients">
+                        ${meal.ingredients.map(i => `<div class="ingredient">${i}</div>`).join('')}
+                    </div>
+                    ${meal.note ? `<div style="margin-top:10px; padding: 10px 12px; background: rgba(143,188,143,0.15); border-left: 3px solid #4a8b5e; border-radius: 0 8px 8px 0; font-size: 12px; color: #2d5f3f; line-height: 1.5;">📝 ${meal.note}</div>` : ''}
+                `;
+                body.appendChild(section);
+            });
+            
+            document.getElementById('dayModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('dayModal').classList.remove('active');
+        }
+
+        // Render shopping list
+        function renderShopping() {
+            // Update month display
+            document.getElementById('shoppingMonthDisplay').textContent = formatMonthDisplay(currentShoppingMonth);
+            
+            const container = document.getElementById('shoppingContainer');
+            container.innerHTML = '';
+            
+            const monthShoppingList = getShoppingListForMonth(currentShoppingMonth);
+            
+            // Create a unique key for purchased items per month
+            const purchasedKey = `purchased-${currentShoppingMonth}`;
+            if (!purchased[purchasedKey]) {
+                purchased[purchasedKey] = {};
+            }
+            
+            Object.entries(monthShoppingList).forEach(([category, items]) => {
+                const section = document.createElement('div');
+                section.className = 'shopping-category';
+                
+                const title = document.createElement('div');
+                title.className = 'category-title';
+                title.textContent = category;
+                section.appendChild(title);
+                
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'shopping-item';
+                    if (purchased[purchasedKey][item]) itemDiv.classList.add('purchased');
+                    itemDiv.onclick = () => togglePurchased(item);
+                    itemDiv.innerHTML = `
+                        <div class="checkbox">
+                            <div class="checkmark">✓</div>
+                        </div>
+                        <div class="item-name">${item}</div>
+                    `;
+                    section.appendChild(itemDiv);
+                });
+                
+                container.appendChild(section);
+            });
+        }
+
+        function togglePurchased(item) {
+            const purchasedKey = `purchased-${currentShoppingMonth}`;
+            if (!purchased[purchasedKey]) {
+                purchased[purchasedKey] = {};
+            }
+            purchased[purchasedKey][item] = !purchased[purchasedKey][item];
+            saveData();
+            renderShopping();
+        }
+
+        function resetShoppingList() {
+            if (confirm(`¿Reiniciar la lista de compra de ${formatMonthDisplay(currentShoppingMonth)}?`)) {
+                const purchasedKey = `purchased-${currentShoppingMonth}`;
+                purchased[purchasedKey] = {};
+                saveData();
+                renderShopping();
+            }
+        }
+
+        // Render tracking with week selector
+        function renderTracking() {
+            // Update month display
+            document.getElementById('trackingMonthDisplay').textContent = formatMonthDisplay(currentTrackingMonth);
+            
+            const [year, month] = currentTrackingMonth.split('-').map(Number);
+            const totalWeeks = Math.ceil(new Date(year, month, 0).getDate() / 7);
+            
+            // Render week selector
+            const weekSelector = document.getElementById('weekSelector');
+            weekSelector.innerHTML = '';
+            
+            for (let week = 1; week <= totalWeeks; week++) {
+                const btn = document.createElement('button');
+                btn.className = 'week-btn';
+                if (week === currentWeek) btn.classList.add('active');
+                btn.textContent = `Semana ${week}`;
+                btn.onclick = () => {
+                    currentWeek = week;
+                    renderTracking();
+                };
+                weekSelector.appendChild(btn);
+            }
+            
+            // Get menu for this month
+            const menu = getMenuForMonth(currentTrackingMonth);
+            const monthKey = currentTrackingMonth;
+            const weekDataKey = `${monthKey}-week${currentWeek}`;
+            
+            // Render days
+            const container = document.getElementById('trackingContainer');
+            container.innerHTML = '';
+            
+            if (!weeklyData[weekDataKey]) {
+                weeklyData[weekDataKey] = { days: {}, comment: '' };
+            }
+            const weekData = weeklyData[weekDataKey];
+            
+            menu.forEach(day => {
+                if (!weekData.days[day.id]) {
+                    weekData.days[day.id] = {
+                        completion: {},
+                        counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                        comment: ''
+                    };
+                    day.meals.forEach(meal => {
+                        weekData.days[day.id].completion[meal.type] = false;
+                    });
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                const dayData = weekData.days[day.id];
+                let completed = 0;
+                day.meals.forEach(meal => {
+                    if (dayData.completion[meal.type]) completed++;
+                });
+                const dayPercent = day.meals.length > 0 ? Math.round((completed / day.meals.length) * 100) : 0;
+                
+                let mealsHTML = '';
+                day.meals.forEach(meal => {
+                    const checked = dayData.completion[meal.type] ? 'checked' : '';
+                    mealsHTML += `
+                        <div class="meal-check ${checked}" onclick="toggleMeal('${weekDataKey}', '${day.id}', '${meal.type}')">
+                            <div class="checkbox">
+                                <div class="checkmark">✓</div>
+                            </div>
+                            <div class="meal-name">${meal.type}</div>
+                        </div>
+                    `;
+                });
+                
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div class="card-title" style="margin: 0;">${day.day}</div>
+                        <div class="completion-percent">${dayPercent}%</div>
+                    </div>
+                    ${mealsHTML}
+                    <div class="counter-row">
+                        <div class="counter">
+                            <div class="counter-icon">🥤</div>
+                            <div class="counter-controls">
+                                <button class="counter-btn minus" onclick="updateCounter('${weekDataKey}', '${day.id}', 'cocas', -1)">−</button>
+                                <div class="counter-display">${dayData.counters.cocas || 0}</div>
+                                <button class="counter-btn" onclick="updateCounter('${weekDataKey}', '${day.id}', 'cocas', 1)">+</button>
+                            </div>
+                            <div class="counter-label" style="margin-top: 8px;">Coca-Colas</div>
+                        </div>
+                        <div class="counter">
+                            <div class="counter-icon">🍺</div>
+                            <div class="counter-controls">
+                                <button class="counter-btn minus" onclick="updateCounter('${weekDataKey}', '${day.id}', 'beers', -1)">−</button>
+                                <div class="counter-display">${dayData.counters.beers || 0}</div>
+                                <button class="counter-btn" onclick="updateCounter('${weekDataKey}', '${day.id}', 'beers', 1)">+</button>
+                            </div>
+                            <div class="counter-label" style="margin-top: 8px;">Cervezas</div>
+                        </div>
+                        <div class="counter">
+                            <div class="counter-icon">📝</div>
+                            <div class="counter-controls">
+                                <button class="counter-btn minus" onclick="updateCounter('${weekDataKey}', '${day.id}', 'others', -1)">−</button>
+                                <div class="counter-display">${dayData.counters.others || 0}</div>
+                                <button class="counter-btn" onclick="updateCounter('${weekDataKey}', '${day.id}', 'others', 1)">+</button>
+                            </div>
+                            <div class="counter-label" style="margin-top: 8px;">Otros</div>
+                        </div>
+                    </div>
+                    <div class="counter-row" style="grid-template-columns: 1fr; margin-top: 12px;">
+                        <div class="counter">
+                            <div class="counter-icon">😴</div>
+                            <div class="counter-controls">
+                                <button class="counter-btn minus" onclick="updateCounter('${weekDataKey}', '${day.id}', 'sleep', -0.5)">−</button>
+                                <div class="counter-display">${(dayData.counters.sleep || 0).toFixed(1)}h</div>
+                                <button class="counter-btn" onclick="updateCounter('${weekDataKey}', '${day.id}', 'sleep', 0.5)">+</button>
+                            </div>
+                            <div class="counter-label" style="margin-top: 8px;">Horas de Sueño</div>
+                        </div>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-label">Especificar "Otros":</div>
+                        <input type="text" id="others-text-${weekDataKey}-${day.id}" value="${dayData.counters.othersText || ''}" 
+                               onchange="updateOthersText('${weekDataKey}', '${day.id}', this.value)" 
+                               placeholder="Ej: 2 copas de vino, 1 refresco...">
+                    </div>
+                    <div class="comments-section">
+                        <div class="comment-label">Comentarios del día:</div>
+                        <textarea id="comment-${weekDataKey}-${day.id}" onchange="updateDayComment('${weekDataKey}', '${day.id}', this.value)" 
+                                  placeholder="Ej: Comí fuera, cambié desayuno por..., me sentí bien...">${dayData.comment || ''}</textarea>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            saveData();
+        }
+
+        function toggleMeal(weekDataKey, dayId, mealType) {
+            if (!weeklyData[weekDataKey]) {
+                weeklyData[weekDataKey] = { days: {} };
+            }
+            if (!weeklyData[weekDataKey].days[dayId]) {
+                weeklyData[weekDataKey].days[dayId] = {
+                    completion: {},
+                    counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                    comment: ''
+                };
+            }
+            weeklyData[weekDataKey].days[dayId].completion[mealType] = !weeklyData[weekDataKey].days[dayId].completion[mealType];
+            saveData();
+            renderTracking();
+            updateDashboard();
+        }
+
+        function updateCounter(weekDataKey, dayId, type, delta) {
+            if (!weeklyData[weekDataKey]) {
+                weeklyData[weekDataKey] = { days: {} };
+            }
+            if (!weeklyData[weekDataKey].days[dayId]) {
+                weeklyData[weekDataKey].days[dayId] = {
+                    completion: {},
+                    counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                    comment: ''
+                };
+            }
+            weeklyData[weekDataKey].days[dayId].counters[type] = Math.max(0, (weeklyData[weekDataKey].days[dayId].counters[type] || 0) + delta);
+            saveData();
+            renderTracking();
+            updateDashboard();
+        }
+
+        function updateOthersText(weekDataKey, dayId, text) {
+            if (!weeklyData[weekDataKey]) {
+                weeklyData[weekDataKey] = { days: {} };
+            }
+            if (!weeklyData[weekDataKey].days[dayId]) {
+                weeklyData[weekDataKey].days[dayId] = {
+                    completion: {},
+                    counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                    comment: ''
+                };
+            }
+            weeklyData[weekDataKey].days[dayId].counters.othersText = text;
+            saveData();
+        }
+
+        function updateDayComment(weekDataKey, dayId, comment) {
+            if (!weeklyData[weekDataKey]) {
+                weeklyData[weekDataKey] = { days: {} };
+            }
+            if (!weeklyData[weekDataKey].days[dayId]) {
+                weeklyData[weekDataKey].days[dayId] = {
+                    completion: {},
+                    counters: { cocas: 0, beers: 0, others: 0, othersText: '', sleep: 0 },
+                    comment: ''
+                };
+            }
+            weeklyData[weekDataKey].days[dayId].comment = comment;
+            saveData();
+        }
+
+        // Month navigation for Menu screen
+        function changeMenuMonth(delta) {
+            const [year, month] = currentMenuMonth.split('-').map(Number);
+            const date = new Date(year, month - 1 + delta, 1);
+            currentMenuMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            renderMenu();
+        }
+        
+        // Month navigation for Tracking screen
+        function changeTrackingMonth(delta) {
+            const [year, month] = currentTrackingMonth.split('-').map(Number);
+            const date = new Date(year, month - 1 + delta, 1);
+            currentTrackingMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            currentWeek = 1;
+            renderTracking();
+        }
+        
+        // Get the appropriate menu for a given month
+        function getMenuForMonth(monthKey) {
+            return customMenus[monthKey] || weeklyPlan;
+        }
+        
+        // Get the appropriate shopping list for a given month
+        function getShoppingListForMonth(monthKey) {
+            return customShoppingLists[monthKey] || shoppingList;
+        }
+        
+        // Month navigation for Shopping screen
+        function changeShoppingMonth(delta) {
+            const [year, month] = currentShoppingMonth.split('-').map(Number);
+            const date = new Date(year, month - 1 + delta, 1);
+            currentShoppingMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            renderShopping();
+        }
+        
+        // Month navigation for Report screen
+        function changeReportMonth(delta) {
+            const [year, month] = currentReportMonth.split('-').map(Number);
+            const date = new Date(year, month - 1 + delta, 1);
+            currentReportMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            renderReport();
+        }
+        
+        // Format month for display
+        function formatMonthDisplay(monthKey) {
+            const [year, month] = monthKey.split('-').map(Number);
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            return `${monthNames[month - 1]} ${year}`;
+        }
+        
+        // API Key management
+
+
+
+        // PDF Upload and AI Processing
+        
+        // Reset all data
+        window.resetAllData = function() {
+            if (!confirm('⚠️ ¿Borrar todos los datos?')) {
+                return;
+            }
+            
+            if (!confirm('🔴 ¿Estás completamente seguro?')) {
+                return;
+            }
+            
+            localStorage.clear();
+            alert('Datos borrados');
+            location.href = location.href;
+        };
+        
+        // Render report
+        function renderReport() {
+            // Update month display
+            document.getElementById('reportMonthDisplay').textContent = formatMonthDisplay(currentReportMonth);
+            
+            const [year, month] = currentReportMonth.split('-').map(Number);
+            const totalWeeks = Math.ceil(new Date(year, month, 0).getDate() / 7);
+            
+            const menu = getMenuForMonth(currentReportMonth);
+            const monthKey = currentReportMonth;
+            
+            // Calculate monthly stats
+            let totalMeals = 0;
+            let completedMeals = 0;
+            let cocas = 0, beers = 0, others = 0;
+            
+            for (let week = 1; week <= totalWeeks; week++) {
+                const weekDataKey = `${monthKey}-week${week}`;
+                const weekData = weeklyData[weekDataKey];
+                
+                if (!weekData) continue;
+                
+                menu.forEach(day => {
+                    if (!weekData.days || !weekData.days[day.id]) return;
+                    
+                    const dayData = weekData.days[day.id];
+                    
+                    day.meals.forEach(meal => {
+                        totalMeals++;
+                        if (dayData.completion && dayData.completion[meal.type]) {
+                            completedMeals++;
+                        }
+                    });
+                    
+                    if (dayData.counters) {
+                        cocas += dayData.counters.cocas || 0;
+                        beers += dayData.counters.beers || 0;
+                        others += dayData.counters.others || 0;
+                    }
+                });
+            }
+            
+            const monthlyPercent = totalMeals > 0 ? Math.round((completedMeals / totalMeals) * 100) : 0;
+            
+            document.getElementById('reportMonthlyPercent').textContent = monthlyPercent + '%';
+            document.getElementById('reportCocas').textContent = cocas;
+            document.getElementById('reportBeers').textContent = beers;
+            document.getElementById('reportOthers').textContent = others;
+            
+            // Weekly comments
+            const commentsContainer = document.getElementById('reportComments');
+            commentsContainer.innerHTML = '';
+            
+            for (let week = 1; week <= totalWeeks; week++) {
+                const weekDataKey = `${monthKey}-week${week}`;
+                const weekData = weeklyData[weekDataKey];
+                
+                // Calculate week completion
+                let weekTotal = 0;
+                let weekCompleted = 0;
+                
+                if (weekData && weekData.days) {
+                    menu.forEach(day => {
+                        if (!weekData.days[day.id]) return;
+                        const dayData = weekData.days[day.id];
+                        
+                        day.meals.forEach(meal => {
+                            weekTotal++;
+                            if (dayData.completion && dayData.completion[meal.type]) {
+                                weekCompleted++;
+                            }
+                        });
+                    });
+                }
+                
+                const weekPercent = weekTotal > 0 ? Math.round((weekCompleted / weekTotal) * 100) : 0;
+                
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'report-week';
+                
+                let allComments = [];
+                
+                if (weekData && weekData.days) {
+                    menu.forEach(day => {
+                        if (!weekData.days[day.id]) return;
+                        const dayData = weekData.days[day.id];
+                        
+                        if (dayData.comment && dayData.comment.trim()) {
+                            allComments.push(`${day.day}: ${dayData.comment}`);
+                        }
+                        if (dayData.counters && dayData.counters.othersText && dayData.counters.othersText.trim()) {
+                            allComments.push(`${day.day} - Otros: ${dayData.counters.othersText}`);
+                        }
+                    });
+                }
+                
+                weekDiv.innerHTML = `
+                    <div class="report-week-title">Semana ${week} - Cumplimiento: ${weekPercent}%</div>
+                    <div class="report-comment ${allComments.length === 0 ? 'empty' : ''}">
+                        ${allComments.length > 0 ? allComments.join('\n') : 'Sin comentarios esta semana'}
+                    </div>
+                `;
+                
+                commentsContainer.appendChild(weekDiv);
+            }
+        }
+
+        // Initialize app
+                try {
+            loadData();
+                        updateHeaderDate();
+                        updateDashboard();
+        } catch(e) {
+            console.error('Init error:', e);
+        }
+        
+        // Attach reset button event
+        // Reset button - attach immediately
+        (function() {
+            function attachReset() {
+                try {
+                    var btn = document.getElementById('resetAllDataBtn');
+                    if (btn) btn.onclick = function() { window.resetAllData(); };
+                } catch(e) {}
+            }
+            attachReset();
+            document.addEventListener('DOMContentLoaded', attachReset);
+        })();
+
+        // Nav event delegation - immediate + document fallback
+        (function() {
+            function attachNav() {
+                var nav = document.getElementById('mainNav');
+                if (nav && !nav._navBound) {
+                    nav._navBound = true;
+                    nav.addEventListener('click', function(e) {
+                        var item = e.target.closest('[data-screen]');
+                        if (item) switchScreen(item.getAttribute('data-screen'));
+                    });
+                }
+            }
+            attachNav(); // immediate - script is after nav in DOM
+            document.addEventListener('DOMContentLoaded', attachNav); // fallback
+        })();
+        
+        // Also document-level fallback for sandboxed environments
+        document.addEventListener('click', function(e) {
+            var item = e.target.closest('#mainNav [data-screen]');
+            if (item) switchScreen(item.getAttribute('data-screen'));
+        });
+    
+</script>
+</body>
+</html>
