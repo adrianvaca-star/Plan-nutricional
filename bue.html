@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mi Plan · Adrián</title>
+<style>
+:root{
+  --teal-900:#0f3b32;
+  --teal-700:#1a4d43;
+  --teal-500:#2d6a5c;
+  --teal-100:#e4efec;
+  --cream:#faf7f0;
+  --paper:#ffffff;
+  --ink:#1f2b28;
+  --ink-soft:#5b6b66;
+  --gold:#c9932f;
+  --coral:#c25b4a;
+  --line:#e3ddd0;
+  --ok:#3d8361;
+  --warn:#c9932f;
+  --bad:#c25b4a;
+  --radius:14px;
+  --shadow:0 2px 10px rgba(15,59,50,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--cream);color:var(--ink);
+  font-family:"Avenir Next",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}
+h1,h2,h3,h4{font-family:Georgia,"Iowan Old Style",serif;font-weight:600;margin:0 0 4px;color:var(--teal-900);}
+p{margin:0;}
+button{font-family:inherit;}
+#app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:78px;position:relative;}
+
+/* Top bar */
+.topbar{position:sticky;top:0;z-index:20;background:var(--teal-900);color:#fff;
+  padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;}
+.topbar .brand{display:flex;align-items:center;gap:8px;}
+.topbar .brand .mark{width:22px;height:22px;border-radius:6px;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--teal-900);}
+.topbar h1{color:#fff;font-size:17px;margin:0;}
+.topbar .sub{font-size:11px;color:#c9d9d4;font-family:system-ui,sans-serif;}
+
+/* Sections */
+.view{display:none;padding:16px;animation:fade .18s ease;}
+.view.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* Cards */
+.card{background:var(--paper);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);
+  border:1px solid var(--line);margin-bottom:12px;}
+.card h3{font-size:15px;}
+
+/* Dashboard header stats */
+.stat-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.stat{background:var(--teal-700);color:#fff;border-radius:var(--radius);padding:12px 14px;}
+.stat .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#bcd6ce;
+  font-family:system-ui,sans-serif;}
+.stat .value{font-family:Georgia,serif;font-size:22px;margin-top:2px;}
+.stat .value small{font-size:12px;font-weight:400;color:#bcd6ce;}
+
+/* Generate button */
+.btn-generate{width:100%;background:linear-gradient(135deg,var(--gold),#b57e22);color:#2a1d05;
+  border:none;border-radius:var(--radius);padding:16px;font-size:15px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:14px;
+  box-shadow:0 4px 14px rgba(201,147,47,.35);}
+.btn-generate:active{transform:scale(.98);}
+
+/* Day cards */
+.day-card{margin-bottom:10px;}
+.day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.day-head .dname{font-family:Georgia,serif;font-size:16px;color:var(--teal-900);}
+.day-head .dtrain{font-size:10.5px;padding:2px 8px;border-radius:20px;background:var(--teal-100);
+  color:var(--teal-700);font-family:system-ui,sans-serif;font-weight:600;}
+.day-macros{font-size:11.5px;color:var(--ink-soft);font-family:system-ui,sans-serif;margin-bottom:10px;
+  display:flex;gap:12px;}
+.meal-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);}
+.meal-row:first-of-type{border-top:none;}
+.meal-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:transparent;}
+.meal-check.done{background:var(--ok);border-color:var(--ok);color:#fff;}
+.meal-check.partial{background:var(--warn);border-color:var(--warn);color:#fff;}
+.meal-info{flex:1;min-width:0;cursor:pointer;}
+.meal-info .mtype{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);
+  font-family:system-ui,sans-serif;font-weight:700;}
+.meal-info .mname{font-size:13.5px;line-height:1.3;}
+.meal-info .mmacros{font-size:11px;color:var(--ink-soft);font-family:system-ui,sans-serif;}
+.meal-actions{display:flex;gap:6px;flex:none;}
+.icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--cream);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--teal-700);}
+.icon-btn:active{background:var(--teal-100);}
+
+/* Buttons */
+.btn{border:none;border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600;cursor:pointer;}
+.btn-primary{background:var(--teal-700);color:#fff;}
+.btn-outline{background:transparent;border:1px solid var(--teal-700);color:var(--teal-700);}
+.btn-block{width:100%;}
+.btn-sm{padding:7px 10px;font-size:12.5px;border-radius:8px;}
+
+/* Nav */
+.navbar{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#fff;border-top:1px solid var(--line);
+  display:flex;max-width:560px;margin:0 auto;box-shadow:0 -2px 10px rgba(0,0,0,.04);}
+.nav-btn{flex:1;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:none;color:var(--ink-soft);font-size:9.5px;font-family:system-ui,sans-serif;cursor:pointer;}
+.nav-btn .ic{font-size:19px;}
+.nav-btn.active{color:var(--teal-700);font-weight:700;}
+
+/* Recipe grid */
+.recipe-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
+.tab{flex:none;padding:6px 12px;border-radius:20px;font-size:12px;background:var(--teal-100);
+  color:var(--teal-700);border:none;cursor:pointer;font-family:system-ui,sans-serif;font-weight:600;}
+.tab.active{background:var(--teal-700);color:#fff;}
+.recipe-item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;
+  border-top:1px solid var(--line);cursor:pointer;}
+.recipe-item:first-child{border-top:none;}
+.recipe-item .rname{font-size:13.5px;}
+.recipe-item .rtag{font-size:10px;color:var(--ink-soft);font-family:system-ui,sans-serif;}
+.recipe-item .rmacros{font-size:11px;color:var(--ink-soft);text-align:right;font-family:system-ui,sans-serif;}
+.star{font-size:16px;color:var(--line);cursor:pointer;background:none;border:none;padding:0 6px;}
+.star.fav{color:var(--gold);}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,30,26,.5);z-index:100;display:none;
+  align-items:flex-end;justify-content:center;}
+.modal-bg.active{display:flex;}
+.modal{background:#fff;width:100%;max-width:560px;border-radius:20px 20px 0 0;max-height:88vh;
+  overflow-y:auto;padding:18px;animation:up .2s ease;}
+@keyframes up{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-close{float:right;background:var(--cream);border:none;width:30px;height:30px;border-radius:50%;
+  font-size:16px;cursor:pointer;color:var(--ink-soft);}
+.ing-list{list-style:none;padding:0;margin:8px 0;}
+.ing-list li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);
+  font-size:13.5px;}
+.step-list{padding-left:18px;margin:8px 0;}
+.step-list li{margin-bottom:8px;font-size:13.5px;line-height:1.5;}
+.macro-pills{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;}
+.pill{background:var(--teal-100);color:var(--teal-700);border-radius:20px;padding:5px 12px;font-size:12px;
+  font-family:system-ui,sans-serif;font-weight:600;}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-family:system-ui,sans-serif;
+  font-weight:700;letter-spacing:.03em;}
+.badge-original{background:#e4efec;color:var(--teal-700);}
+.badge-variante{background:#f3e6d8;color:var(--gold);}
+.badge-usuario{background:#f3ded9;color:var(--coral);}
+.badge-ia{background:#e6ddf5;color:#6b3fa0;}
+.eq-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-family:system-ui,sans-serif;font-weight:700;}
+.eq-ok{background:#e1f0e6;color:var(--ok);}
+.eq-mid{background:#f6ecd8;color:var(--warn);}
+.eq-bad{background:#f6e0db;color:var(--bad);}
+.pref-btns{display:flex;gap:6px;}
+.pref-btn{background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:13px;cursor:pointer;}
+.pref-btn.on{background:var(--teal-100);border-color:var(--teal-500);}
+.stale-banner{background:#f6ecd8;border:1px solid var(--warn);color:#6b4e10;border-radius:12px;padding:10px 12px;
+  font-size:12.5px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.hoy-card{background:var(--teal-900);color:#fff;border-radius:var(--radius);padding:14px;margin-bottom:14px;}
+.hoy-card .hoy-top{display:flex;justify-content:space-between;font-size:11.5px;color:#bcd6ce;font-family:system-ui,sans-serif;margin-bottom:6px;}
+.hoy-card .hoy-meal{font-family:Georgia,serif;font-size:16px;margin-bottom:2px;}
+.hoy-card .hoy-sub{font-size:12px;color:#dce9e5;font-family:system-ui,sans-serif;}
+.err-text{color:var(--bad);font-size:11.5px;margin-top:-6px;margin-bottom:8px;font-family:system-ui,sans-serif;}
+.impact-box{background:var(--cream);border-radius:12px;padding:12px;margin:10px 0;border:1px solid var(--line);}
+.impact-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;}
+.impact-row.total{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;font-weight:700;}
+.impact-verdict{font-size:12.5px;font-weight:700;margin-top:8px;padding:8px 10px;border-radius:10px;}
+.impact-good{background:#e1f0e6;color:var(--ok);}
+.impact-warn{background:#f6ecd8;color:#8a6414;}
+.free-note{background:var(--teal-100);color:var(--teal-700);border-radius:10px;padding:8px 10px;font-size:12px;
+  font-family:system-ui,sans-serif;margin:6px 0;}
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.trend-grid .t-item{background:var(--cream);border-radius:10px;padding:10px;}
+.trend-grid .t-item .t-val{font-family:Georgia,serif;font-size:18px;color:var(--teal-900);}
+.trend-grid .t-item .t-lbl{font-size:10.5px;color:var(--ink-soft);font-family:system-ui,sans-serif;text-transform:uppercase;}
+.gen-loading{text-align:center;font-size:12.5px;color:var(--teal-700);font-family:system-ui,sans-serif;padding:6px 0;}
+.alt-list{margin-top:6px;}
+.alt-item{padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.alt-item:active{background:var(--teal-100);}
+
+/* Shopping list */
+.shop-cat{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:#fff;
+  font-family:system-ui,sans-serif;font-weight:700;margin:14px 0 6px;background:var(--teal-700);
+  display:inline-block;padding:4px 10px;border-radius:20px;}
+.shop-cat:first-child{margin-top:0;}
+.shop-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);}
+.shop-item:first-of-type{border-top:none;}
+.shop-item.checked .sname{text-decoration:line-through;color:var(--ink-soft);}
+.chk{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;}
+.chk.on{background:var(--ok);border-color:var(--ok);color:#fff;}
+.sname{flex:1;font-size:13.5px;color:var(--ink);font-weight:500;}
+.sqty{font-size:12.5px;color:var(--teal-700);font-family:system-ui,sans-serif;font-weight:700;}
+.day-pill-picker{display:flex;flex-wrap:wrap;gap:6px;}
+.day-pill{flex:none;}
+.day-pill input{display:none;}
+.day-pill span{display:inline-block;padding:7px 10px;border-radius:20px;border:1.5px solid var(--line);
+  background:var(--cream);color:var(--ink);font-size:12px;font-family:system-ui,sans-serif;font-weight:600;cursor:pointer;}
+.day-pill input:checked + span{background:var(--teal-700);border-color:var(--teal-700);color:#fff;}
+.sup-days-line{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.sup-day-tag{font-size:10.5px;padding:3px 8px;border-radius:12px;background:var(--teal-100);color:var(--teal-700);
+  font-family:system-ui,sans-serif;font-weight:700;}
+.ai-box{background:linear-gradient(135deg,var(--teal-100),var(--cream));border:1px solid var(--teal-500);
+  border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+
+/* Forms */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;
+  font-family:system-ui,sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;font-size:14px;font-family:inherit;background:var(--cream);color:var(--ink);}
+.field textarea{resize:vertical;min-height:60px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* Chart */
+.chart-wrap{background:var(--paper);border-radius:var(--radius);border:1px solid var(--line);
+  box-shadow:var(--shadow);padding:14px;margin-bottom:12px;}
+canvas{width:100%;display:block;}
+
+/* Misc */
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);
+  font-family:system-ui,sans-serif;font-weight:700;margin:16px 0 8px;}
+.empty{text-align:center;padding:30px 10px;color:var(--ink-soft);font-size:13.5px;}
+.row-between{display:flex;justify-content:space-between;align-items:center;}
+.small-muted{font-size:11.5px;color:var(--ink-soft);font-family:system-ui,sans-serif;}
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--teal-900);
+  color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;z-index:200;opacity:0;
+  transition:opacity .25s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand"><div class="mark">△</div><div><h1 id="topTitle">Mi Semana</h1><div class="sub" id="topSub">equilátera · Adrián</div></div></div>
+    <div style="font-size:20px;cursor:pointer" onclick="nav('config')">⚙️</div>
+  </div>
+
+  <!-- SEMANA -->
+  <div class="view active" id="view-semana">
+    <div id="hoyCard"></div>
+    <div id="staleBanner"></div>
+    <div class="stat-row">
+      <div class="stat"><div class="label">Peso actual</div><div class="value" id="statPeso">–</div></div>
+      <div class="stat"><div class="label">% Grasa</div><div class="value" id="statGrasa">–</div></div>
+      <div class="stat"><div class="label">Proteína objetivo</div><div class="value" id="statProt">–</div></div>
+      <div class="stat"><div class="label">Cumplimiento semanal</div><div class="value" id="statCump">–</div></div>
+    </div>
+    <button class="btn-generate" id="btnGenerar" onclick="iniciarGeneracion()">🔄 Generar semana</button>
+    <div class="row-between" style="margin-bottom:10px;">
+      <button class="btn btn-outline btn-sm" onclick="toggleRehacer()">✏️ Rehacer semana</button>
+    </div>
+    <div class="card" id="rehacerBox" style="display:none;">
+      <div class="field"><label>¿Qué quieres cambiar?</label>
+        <textarea id="rehacerNota" placeholder='Ej: "esta semana no quiero pollo", "cena fuera el viernes"…'></textarea></div>
+      <div class="small-muted" style="margin-bottom:8px;">De momento esto no se interpreta automáticamente: se guarda como nota y se regenera la semana. Es la base para una función más inteligente en el futuro.</div>
+      <button class="btn btn-primary btn-block" onclick="regenerarConNota()">Guardar nota y regenerar</button>
+    </div>
+    <div class="row-between" id="restoSemanaToggle" style="display:none;margin:6px 0;cursor:pointer;" onclick="toggleRestoSemana()">
+      <span class="section-title" style="margin:0;" id="restoSemanaLabel">Ver el resto de la semana</span>
+      <span id="restoSemanaIcon" style="font-size:16px;color:var(--teal-700);">▾</span>
+    </div>
+    <div id="weekContainer"></div>
+    <div id="resumenSemanal"></div>
+  </div>
+
+  <!-- COMPRA -->
+  <div class="view" id="view-compra">
+    <div class="row-between" style="margin-bottom:6px;">
+      <h3 style="margin:0">🛒 Lista de la compra</h3>
+      <button class="btn btn-outline btn-sm" onclick="resetShopping()">Reiniciar</button>
+    </div>
+    <div class="row-between" style="margin-bottom:10px;">
+      <span class="small-muted" id="shopCounter"></span>
+      <div style="display:flex;gap:6px;">
+        <button class="tab" id="shopFilterAll" onclick="setShopFilter('todos')">Todos</button>
+        <button class="tab" id="shopFilterPend" onclick="setShopFilter('pendientes')">Pendientes</button>
+        <button class="tab" id="shopFilterDone" onclick="setShopFilter('comprados')">Comprados</button>
+        <button class="icon-btn" onclick="compartirLista()" title="Compartir/copiar">📤</button>
+      </div>
+    </div>
+    <div id="shopContainer"></div>
+  </div>
+
+  <!-- RECETAS -->
+  <div class="view" id="view-recetas">
+    <div class="row-between" style="margin-bottom:10px;">
+      <h3 style="margin:0">📖 Recetas</h3>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="openAIRecipeBox()">✨ Con IA</button>
+        <button class="btn btn-primary btn-sm" onclick="openNewRecipe()">+ Nueva</button>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:8px;"><input id="recipeSearch" placeholder="Buscar receta…" oninput="renderRecipes()"></div>
+    <div class="recipe-tabs" id="recipeTabs"></div>
+    <div class="card" id="recipeListCard"><div id="recipeList"></div></div>
+  </div>
+
+  <!-- EVOLUCION -->
+  <div class="view" id="view-evolucion">
+    <h3 style="margin-bottom:10px;">📈 Mi evolución</h3>
+    <div class="card" id="evoResumen"></div>
+    <div class="card">
+      <div class="row-between"><strong style="font-size:13.5px">Registrar hoy</strong></div>
+      <div class="two-col" style="margin-top:10px;">
+        <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="inPeso" placeholder="75,4"></div>
+        <div class="field"><label>% Grasa</label><input type="number" step="0.1" id="inGrasa" placeholder="15,9"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Cintura (cm, opcional)</label><input type="number" step="0.1" id="inCintura"></div>
+        <div class="field"><label>Fecha</label><input type="date" id="inFecha"></div>
+      </div>
+      <div class="field"><label>Notas</label><textarea id="inNotas" placeholder="opcional"></textarea></div>
+      <button class="btn btn-primary btn-block" onclick="registrarPeso()">Guardar registro</button>
+    </div>
+    <div class="chart-wrap"><div class="small-muted" style="margin-bottom:6px;">Evolución del peso (kg)</div><canvas id="chartPeso" height="140"></canvas></div>
+    <div class="chart-wrap"><div class="small-muted" style="margin-bottom:6px;">Evolución del % de grasa</div><canvas id="chartGrasa" height="140"></canvas></div>
+    <div class="card" id="historialPeso"></div>
+  </div>
+
+  <!-- SUPLEMENTOS -->
+  <div class="view" id="view-suplementos">
+    <h3 style="margin-bottom:10px;">💊 Suplementación</h3>
+    <div class="card">
+      <div class="two-col">
+        <div class="field"><label>Suplemento</label><input id="supNombre" placeholder="Whey protein"></div>
+        <div class="field"><label>Cantidad</label><input id="supCantidad" placeholder="30 g"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Proteína aporta (g)</label><input type="number" id="supProteina" placeholder="24"></div>
+        <div class="field"><label>Hora</label><input type="time" id="supHora"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="addSuplemento()">Añadir suplemento</button>
+    </div>
+    <div id="supList"></div>
+  </div>
+
+  <!-- CONFIG -->
+  <div class="view" id="view-config">
+    <h3 style="margin-bottom:10px;">⚙️ Configuración</h3>
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Objetivos</div>
+      <div class="two-col">
+        <div class="field"><label>Calorías objetivo</label><input type="number" id="cfgKcal"></div>
+        <div class="field"><label>Proteína objetivo (g)</label><input type="number" id="cfgProt"></div>
+      </div>
+      <div class="field"><label>Objetivo corporal</label>
+        <select id="cfgObjetivo">
+          <option value="perder">Perder grasa</option>
+          <option value="mantener">Mantener peso</option>
+          <option value="ganar">Ganar músculo</option>
+          <option value="recomp" selected>Recomposición corporal</option>
+        </select>
+      </div>
+      <div class="field"><label>Repetición de recetas</label>
+        <select id="cfgVariedad">
+          <option value="alta">Alta variedad</option>
+          <option value="equilibrada" selected>Equilibrada</option>
+          <option value="baja">Poca variedad</option>
+        </select>
+      </div>
+      <div class="section-title">Entrenamiento</div>
+      <div id="trainConfig"></div>
+      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="saveConfig()">Guardar configuración</button>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Semanas guardadas</div>
+      <div id="historyWeeks" class="small-muted">Aún no hay semanas guardadas.</div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-top:0">Copia de seguridad</div>
+      <div class="small-muted" style="margin-bottom:10px;">Todos tus datos viven solo en este navegador. Descarga una copia de vez en cuando, especialmente antes de cambiar de móvil o borrar caché.</div>
+      <div class="two-col">
+        <button class="btn btn-outline btn-block" onclick="exportarDatos()">⬇️ Exportar</button>
+        <button class="btn btn-outline btn-block" onclick="document.getElementById('importFile').click()">⬆️ Importar</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;" onchange="importarDatos(event)">
+      <div id="importError" class="err-text" style="display:none;margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <div class="navbar">
+    <button class="nav-btn active" data-v="semana" onclick="nav('semana')"><span class="ic">🏠</span>Semana</button>
+    <button class="nav-btn" data-v="compra" onclick="nav('compra')"><span class="ic">🛒</span>Compra</button>
+    <button class="nav-btn" data-v="recetas" onclick="nav('recetas')"><span class="ic">📖</span>Recetas</button>
+    <button class="nav-btn" data-v="evolucion" onclick="nav('evolucion')"><span class="ic">📈</span>Evolución</button>
+    <button class="nav-btn" data-v="suplementos" onclick="nav('suplementos')"><span class="ic">💊</span>Suplem.</button>
+  </div>
+
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="closeModalBg(event)">
+  <div class="modal" id="modalContent" onclick="event.stopPropagation()"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =================== DATOS BASE (extraídos de los planes de Centro Equilátera) =================== */
+const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const MEAL_TYPES = [["desayuno","Desayuno"],["almuerzo","Almuerzo"],["comida","Comida"],["merienda","Merienda"],["cena","Cena"]];
+
+let RECIPES = [
+/* ===== COMIDA — ORIGINAL (10) ===== */
+{id:"c01",name:"Salteado de garbanzos con pollo y tomates",meal_type:"comida",kcal:600,protein:65,carbs:55,fat:12,dessert:"Mandarina",
+ time:20,difficulty:"fácil",tags:["pollo","legumbre"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Garbanzos en conserva","200 g"],["Pechuga de pollo sin piel","150 g"],["Tomate cherry","165 g"],["Ajo, orégano, sal y pimienta","al gusto"]],
+ steps:["Aclarar los garbanzos con agua abundante y escurrir.","Cortar el pollo y los tomates.","Calentar aceite, dorar el ajo picado e incorporar el pollo con las especias.","Añadir los tomates y los garbanzos y saltear hasta que los tomates queden tiernos.","Servir caliente."]},
+{id:"c02",name:"Lentejas con sofrito y pollo",meal_type:"comida",kcal:520,protein:65,carbs:42,fat:8,dessert:"Mandarina",
+ time:30,difficulty:"fácil",tags:["pollo","legumbre"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Lentejas en conserva","200 g"],["Pechuga de pollo sin piel","150 g"],["Pimiento rojo y verde","150 g"],["Sal, ajo, pimienta y albahaca","al gusto"]],
+ steps:["Aclarar y escurrir las lentejas.","Sofreír los pimientos con ajo, sal y pimienta.","Trocear el pollo y añadir al sofrito, dorar por todos los lados.","Incorporar las lentejas y albahaca, mezclar 2-3 min y servir caliente."]},
+{id:"c03",name:"Ensalada de patata, huevo y atún",meal_type:"comida",kcal:540,protein:50,carbs:42,fat:15,dessert:"Manzana",
+ time:15,difficulty:"fácil",tags:["atún","huevo","ensalada"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Patata cocida","200 g"],["Atún al natural escurrido","120 g"],["Huevo de gallina","2 uds"],["Espárrago blanco, tomate cherry, lechuga","al gusto"],["Vinagre, pimienta negra y sal","al gusto"]],
+ steps:["Cocer el huevo 10 min, pelar y trocear.","Lavar y trocear la lechuga, tomates y espárragos.","Mezclar todo con la patata y el atún desmenuzado.","Aliñar con aceite, vinagre, sal y pimienta. Servir frío."]},
+{id:"c04",name:"Arroz con champiñones y contramuslo de pollo",meal_type:"comida",kcal:630,protein:60,carbs:42,fat:22,dessert:"Manzana",
+ time:20,difficulty:"fácil",tags:["pollo","arroz"],source_type:"ORIGINAL",favorite:true,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Arroz integral cocido","125 g"],["Champiñones","164 g"],["Cebolla","30 g"],["Contramuslo de pollo deshuesado","250 g"],["Ajo, sal, pimienta, laurel y tomillo","al gusto"]],
+ steps:["Dorar el ajo, incorporar la cebolla y champiñones troceados, cocinar 5 min.","Incorporar el arroz cocido y mezclar.","Preparar el contramuslo a la plancha con aceite, sal, pimienta y tomillo.","Servir junto o como segundo plato."]},
+{id:"c05",name:"Ñoquis con pollo y verduras",meal_type:"comida",kcal:660,protein:66,carbs:60,fat:15,dessert:"Mandarina",
+ time:20,difficulty:"fácil",tags:["pollo","pasta"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Gnocchi","180 g"],["Queso mozzarella rallado","45 g"],["Pechuga de pollo","150 g"],["Tomate cherry","115 g"],["Pesto, albahaca, ajo, orégano","al gusto"]],
+ steps:["Cocer los ñoquis, escurrir con un poco de aceite.","Hacer el pollo a la plancha con las especias.","Añadir los tomates, mezclar con los ñoquis y el queso hasta fundir.","Servir con un poco de pesto."]},
+{id:"c06",name:"Merluza en salsa verde con patata",meal_type:"comida",kcal:400,protein:44,carbs:48,fat:4,dessert:"Fresas",
+ time:40,difficulty:"media",tags:["pescado"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Patata","195 g"],["Merluza","220 g"],["Guisantes","50 g"],["Cebolla y ajo","al gusto"],["Caldo de pescado, vino blanco, perejil","al gusto"]],
+ steps:["Cocer las patatas 20 min. Escurrir y reservar.","Marcar la merluza a la plancha, reservar.","Pochar cebolla y ajo, añadir caldo y vino, reducir.","Añadir guisantes, cocer 10 min, incorporar la merluza y servir con las patatas."]},
+{id:"c07",name:"Pasta con pavo y setas",meal_type:"comida",kcal:610,protein:61,carbs:56,fat:10,dessert:"Mandarina",
+ time:25,difficulty:"fácil",tags:["pavo","pasta"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pasta integral","180 g cocida"],["Pechuga de pavo","150 g"],["Leche evaporada","100 g"],["Setas congeladas","150 g"],["Ajo en polvo, nuez moscada, pimienta y sal","al gusto"]],
+ steps:["Cocer la pasta y reservar.","Saltear las setas, incorporar el pavo troceado y dorar.","Agregar la leche evaporada con las especias, reducir.","Mezclar con la pasta y servir caliente."]},
+{id:"c08",name:"Ensalada de garbanzos con pulpo y aceitunas",meal_type:"comida",kcal:550,protein:50,carbs:54,fat:10,dessert:"Melón y sandía",
+ time:15,difficulty:"fácil",tags:["pulpo","legumbre"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Garbanzos en conserva","200 g"],["Pulpo cocido","200 g"],["Tomate y pimiento rojo","al gusto"],["Sal, limón, aceitunas y albahaca","al gusto"]],
+ steps:["Escurrir los garbanzos.","Trocear el pulpo cocido.","Mezclar todos los ingredientes en una ensaladera.","Aliñar con aceite, limón, sal y albahaca, incorporar las aceitunas y servir."]},
+{id:"c09",name:"Arroz con sepia",meal_type:"comida",kcal:410,protein:38,carbs:54,fat:4,dessert:"Melón",
+ time:25,difficulty:"media",tags:["arroz","marisco"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Arroz blanco","180 g cocido"],["Sepia","165 g"],["Guisantes","27 g"],["Cebolla, tomate triturado","al gusto"],["Perejil, sal y ajo","al gusto"]],
+ steps:["Sofreír cebolla y ajo, añadir la sepia en dados.","Añadir el arroz y el tomate, sofreír.","Añadir caldo, guisantes y salar. Cocinar a fuego alto 5 min, luego medio 10 min.","Reposar 5 min tapado y servir."]},
+{id:"c10",name:"Pasta boloñesa",meal_type:"comida",kcal:650,protein:50,carbs:50,fat:28,dessert:"Sandía",
+ time:30,difficulty:"fácil",tags:["ternera","pasta"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pasta integral","180 g cocida"],["Carne picada de ternera","200 g"],["Zanahoria y cebolla","al gusto"],["Tomate triturado","75 g"],["Sal, orégano, albahaca, pimienta, laurel y ajo","al gusto"]],
+ steps:["Cocer la pasta y reservar.","Sofreír ajo, cebolla y zanahoria picados.","Añadir la carne, sofreír, incorporar el tomate y especias, cocinar 10-15 min.","Mezclar con la pasta y servir caliente."]},
+
+/* ===== COMIDA — VARIANTE (20 nuevas) ===== */
+{id:"vc01",name:"Pollo al horno con patatas y verduras",meal_type:"comida",kcal:560,protein:55,carbs:45,fat:15,dessert:"Manzana",
+ time:40,difficulty:"fácil",tags:["pollo"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo con hueso o contramuslo","180 g"],["Patata","200 g"],["Pimiento, cebolla y calabacín","150 g"],["Ajo, romero, sal y pimienta","al gusto"]],
+ steps:["Cortar patatas y verduras en trozos.","Colocar en bandeja con el pollo, aceite y especias.","Hornear 35-40 min a 200ºC, dando la vuelta a mitad.","Servir caliente."]},
+{id:"vc02",name:"Salmón a la plancha con quinoa y espinacas",meal_type:"comida",kcal:590,protein:42,carbs:40,fat:26,dessert:"Naranja",
+ time:20,difficulty:"fácil",tags:["salmón","pescado"],source_type:"VARIANTE",similarity_score:82,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Salmón","180 g"],["Quinoa cocida","150 g"],["Espinacas frescas","100 g"],["Limón, sal y pimienta","al gusto"]],
+ steps:["Cocer la quinoa según el envase.","Saltear las espinacas con un poco de ajo.","Hacer el salmón a la plancha con sal y pimienta.","Servir todo junto con un chorrito de limón."]},
+{id:"vc03",name:"Wok de ternera con verduras y arroz",meal_type:"comida",kcal:560,protein:42,carbs:55,fat:16,dessert:"Piña",
+ time:20,difficulty:"fácil",tags:["ternera"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Ternera en tiras","150 g"],["Verduras variadas para wok","200 g"],["Arroz cocido","100 g"],["Salsa de soja baja en sal","al gusto"]],
+ steps:["Saltear la ternera a fuego fuerte, reservar.","Saltear las verduras en el wok.","Incorporar la ternera y el arroz, mezclar con la soja.","Servir caliente."]},
+{id:"vc04",name:"Lentejas estofadas con verduras",meal_type:"comida",kcal:420,protein:22,carbs:65,fat:8,dessert:"Pera",
+ time:35,difficulty:"fácil",tags:["vegetariana","legumbre"],source_type:"VARIANTE",similarity_score:88,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Lentejas cocidas","250 g"],["Zanahoria, puerro y pimiento","150 g"],["Tomate triturado","50 g"],["Laurel, pimentón, sal","al gusto"]],
+ steps:["Sofreír las verduras troceadas.","Añadir el tomate y el pimentón, cocinar 2 min.","Incorporar las lentejas y un poco de agua, cocer 15 min.","Servir caliente."]},
+{id:"vc05",name:"Pasta fresca con pesto (Mercadona) y pollo a la plancha",meal_type:"comida",kcal:590,protein:46,carbs:58,fat:16,dessert:"Mandarina",
+ time:15,difficulty:"fácil",tags:["pollo","pasta","preparado"],source_type:"VARIANTE",similarity_score:78,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pasta fresca con pesto (Mercadona, Hacendado)","180 g (2/3 del envase)"],["Pechuga de pollo","120 g"],["Tomate cherry y rúcula","al gusto"]],
+ steps:["Calentar la pasta fresca con pesto según el envase (usa 2/3 del sobre de salsa para bajar la grasa saturada).","Hacer el pollo a la plancha con sal y pimienta, trocear.","Mezclar el pollo con la pasta, añadir tomate cherry y rúcula fresca.","Servir."]},
+{id:"vc06",name:"Arroz tres delicias con pollo y gambas",meal_type:"comida",kcal:580,protein:40,carbs:60,fat:15,dessert:"Melón",
+ time:25,difficulty:"fácil",tags:["pollo","arroz","gambas"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Arroz cocido","150 g"],["Pechuga de pollo","100 g"],["Gambas peladas","80 g"],["Guisantes, zanahoria y huevo","60 g"]],
+ steps:["Saltear el pollo troceado y las gambas, reservar.","Saltear las verduras y el huevo revuelto.","Incorporar el arroz, mezclar con el pollo y las gambas.","Servir caliente."]},
+{id:"vc07",name:"Merluza a la plancha con puré de patata",meal_type:"comida",kcal:380,protein:40,carbs:35,fat:6,dessert:"Kiwi",
+ time:25,difficulty:"fácil",tags:["pescado"],source_type:"VARIANTE",similarity_score:84,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Merluza","200 g"],["Patata","200 g"],["Leche desnatada","30 ml"],["Sal, pimienta y perejil","al gusto"]],
+ steps:["Cocer la patata y triturar con la leche hasta obtener un puré.","Hacer la merluza a la plancha con sal y pimienta.","Servir la merluza sobre el puré con perejil picado."]},
+{id:"vc08",name:"Garbanzos guisados con espinacas y bacalao",meal_type:"comida",kcal:500,protein:40,carbs:45,fat:12,dessert:"Manzana",
+ time:25,difficulty:"fácil",tags:["bacalao","legumbre"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Garbanzos cocidos","200 g"],["Espinacas frescas","100 g"],["Bacalao desalado","120 g"],["Ajo, pimentón, comino","al gusto"]],
+ steps:["Sofreír el ajo con el pimentón.","Añadir las espinacas y rehogar.","Incorporar los garbanzos y el bacalao troceado, cocer 8-10 min.","Servir caliente."]},
+{id:"vc09",name:"Ensalada de quinoa con atún y aguacate",meal_type:"comida",kcal:530,protein:32,carbs:45,fat:22,dessert:"Fresas",
+ time:15,difficulty:"fácil",tags:["atún","quinoa","ensalada"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Quinoa cocida","150 g"],["Atún al natural","100 g"],["Aguacate","80 g"],["Tomate y lechuga","al gusto"]],
+ steps:["Mezclar la quinoa fría con el atún desmenuzado.","Añadir el aguacate en dados, el tomate y la lechuga.","Aliñar con aceite, sal y limón. Servir frío."]},
+{id:"vc10",name:"Pavo al curry suave con arroz basmati",meal_type:"comida",kcal:560,protein:48,carbs:55,fat:12,dessert:"Piña",
+ time:25,difficulty:"fácil",tags:["pavo","curry"],source_type:"VARIANTE",similarity_score:79,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pavo","180 g"],["Arroz basmati cocido","150 g"],["Leche de coco light","50 ml"],["Curry suave, cebolla","al gusto"]],
+ steps:["Sofreír la cebolla, añadir el pavo troceado y dorar.","Incorporar el curry y la leche de coco, cocinar 10 min.","Servir con el arroz basmati."]},
+{id:"vc11",name:"Salteado de tofu con edamame, verduras y arroz",meal_type:"comida",kcal:480,protein:28,carbs:55,fat:16,dessert:"Mandarina",
+ time:15,difficulty:"fácil",tags:["vegetariana","tofu"],source_type:"VARIANTE",similarity_score:76,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Tofu firme","200 g"],["Edamame","50 g"],["Verduras variadas (pimiento, calabacín, zanahoria)","200 g"],["Arroz cocido","120 g"],["Salsa de soja","al gusto"]],
+ steps:["Dorar el tofu en dados, reservar.","Saltear las verduras y el edamame.","Incorporar el tofu y el arroz, mezclar con la soja.","Servir caliente."]},
+{id:"vc12",name:"Bacalao al horno con pisto",meal_type:"comida",kcal:380,protein:40,carbs:20,fat:12,dessert:"Uvas",
+ time:35,difficulty:"media",tags:["bacalao","pescado"],source_type:"VARIANTE",similarity_score:82,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Bacalao","200 g"],["Pimiento, calabacín, cebolla y tomate","200 g"],["Ajo, sal y orégano","al gusto"]],
+ steps:["Preparar el pisto pochando las verduras troceadas 20 min.","Colocar el bacalao sobre el pisto en una bandeja.","Hornear 12-15 min a 190ºC.","Servir caliente."]},
+{id:"vc13",name:"Fajitas de ternera con pimientos",meal_type:"comida",kcal:590,protein:45,carbs:55,fat:18,dessert:"Sandía",
+ time:20,difficulty:"fácil",tags:["ternera"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Ternera en tiras","150 g"],["Fajitas integrales","2 uds"],["Pimientos variados","100 g"],["Especias para fajitas","al gusto"]],
+ steps:["Saltear la ternera con las especias.","Añadir los pimientos y saltear hasta que estén tiernos.","Calentar las fajitas y rellenar.","Servir."]},
+{id:"vc14",name:"Ensaladilla de patata con atún y pollo",meal_type:"comida",kcal:540,protein:38,carbs:48,fat:18,dessert:"Melón",
+ time:25,difficulty:"fácil",tags:["atún","pollo","ensalada"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Patata cocida","200 g"],["Atún al natural","80 g"],["Pechuga de pollo cocida","80 g"],["Zanahoria, guisante y mayonesa ligera","al gusto"]],
+ steps:["Cocer y trocear la patata y la zanahoria.","Mezclar con el atún, el pollo desmenuzado y los guisantes.","Ligar con un poco de mayonesa ligera.","Servir frío."]},
+{id:"vc15",name:"Arroz caldoso con pollo y verduras",meal_type:"comida",kcal:520,protein:42,carbs:55,fat:10,dessert:"Mandarina",
+ time:30,difficulty:"media",tags:["pollo","arroz"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Arroz","100 g crudo"],["Pechuga de pollo","150 g"],["Verduras (pimiento, zanahoria, judía verde)","150 g"],["Caldo de pollo","al gusto"]],
+ steps:["Sofreír el pollo troceado y las verduras.","Añadir el arroz y sofreír 1 min.","Cubrir con caldo y cocer 18-20 min.","Servir caliente y caldoso."]},
+{id:"vc16",name:"Berenjenas rellenas de carne picada",meal_type:"comida",kcal:480,protein:34,carbs:25,fat:22,dessert:"Pera",
+ time:40,difficulty:"media",tags:["ternera"],source_type:"VARIANTE",similarity_score:79,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Berenjena","300 g (2 uds)"],["Carne picada de ternera","150 g"],["Tomate y cebolla","al gusto"],["Queso rallado light (opcional)","20 g"]],
+ steps:["Cocer las berenjenas partidas por la mitad y vaciar la pulpa.","Sofreír la carne con cebolla, tomate y la pulpa.","Rellenar las berenjenas y gratinar 10 min al horno.","Servir caliente."]},
+{id:"vc17",name:"Poke bowl de salmón con arroz y edamame",meal_type:"comida",kcal:620,protein:38,carbs:55,fat:26,dessert:"Mango",
+ time:15,difficulty:"fácil",tags:["salmón","poke"],source_type:"VARIANTE",similarity_score:77,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Salmón fresco o ahumado","120 g"],["Arroz cocido","120 g"],["Edamame","80 g"],["Aguacate, pepino y soja","al gusto"]],
+ steps:["Cortar el salmón en dados.","Montar el bowl con el arroz de base.","Añadir el salmón, el edamame, el aguacate y el pepino.","Aliñar con salsa de soja y servir."]},
+{id:"vc18",name:"Pasta integral con langostinos y calabacín",meal_type:"comida",kcal:520,protein:40,carbs:55,fat:10,dessert:"Kiwi",
+ time:20,difficulty:"fácil",tags:["langostinos","pasta"],source_type:"VARIANTE",similarity_score:82,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pasta integral","180 g cocida"],["Langostinos pelados","150 g"],["Calabacín","150 g"],["Ajo y perejil","al gusto"]],
+ steps:["Cocer la pasta y reservar.","Saltear el ajo y el calabacín en juliana.","Añadir los langostinos, saltear 2-3 min.","Mezclar con la pasta y el perejil, servir."]},
+{id:"vc19",name:"Guiso de ternera con patatas y zanahoria",meal_type:"comida",kcal:560,protein:42,carbs:40,fat:20,dessert:"Manzana",
+ time:50,difficulty:"media",tags:["ternera","guiso"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Ternera para guisar","180 g"],["Patata","150 g"],["Zanahoria","100 g"],["Cebolla, ajo, laurel y vino blanco","al gusto"]],
+ steps:["Dorar la carne, reservar.","Sofreír cebolla y ajo, incorporar la carne y el vino.","Añadir la patata, zanahoria y caldo, cocer 35-40 min a fuego bajo.","Servir caliente."]},
+{id:"vc20",name:"Ensalada templada de pollo, boniato y espinacas",meal_type:"comida",kcal:500,protein:40,carbs:40,fat:16,dessert:"Granada",
+ time:25,difficulty:"fácil",tags:["pollo","ensalada"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo","150 g"],["Boniato","150 g"],["Espinacas frescas","80 g"],["Nueces","10 g"]],
+ steps:["Asar el boniato en dados 20 min a 200ºC.","Hacer el pollo a la plancha y trocear.","Montar la ensalada con las espinacas, el boniato, el pollo y las nueces.","Aliñar con aceite y vinagre."]},
+
+/* ===== COMIDA — 10 fáciles y rápidas más ===== */
+{id:"vc21",name:"Pollo a la plancha con arroz y brócoli",meal_type:"comida",kcal:520,protein:50,carbs:50,fat:10,dessert:"Manzana",
+ time:15,difficulty:"fácil",tags:["pollo"],source_type:"VARIANTE",similarity_score:86,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo","150 g"],["Arroz cocido","120 g"],["Brócoli","150 g"],["Sal, pimienta y limón","al gusto"]],
+ steps:["Cocer el brócoli al vapor 8 min.","Hacer el pollo a la plancha con sal y pimienta.","Servir junto al arroz con un chorrito de limón."]},
+{id:"vc22",name:"Ensalada de pasta integral con atún y tomate",meal_type:"comida",kcal:480,protein:35,carbs:55,fat:12,dessert:"Melón",
+ time:15,difficulty:"fácil",tags:["atún","pasta"],source_type:"VARIANTE",similarity_score:84,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pasta integral","150 g cocida"],["Atún al natural","100 g"],["Tomate y aceitunas","al gusto"],["Aceite de oliva y orégano","al gusto"]],
+ steps:["Cocer la pasta y dejar enfriar.","Mezclar con el atún desmenuzado, el tomate y las aceitunas.","Aliñar con aceite y orégano. Servir frío."]},
+{id:"vc23",name:"Merluza con verduras al vapor y patata",meal_type:"comida",kcal:380,protein:40,carbs:35,fat:6,dessert:"Kiwi",
+ time:20,difficulty:"fácil",tags:["pescado"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Merluza","200 g"],["Verduras variadas","150 g"],["Patata","100 g"],["Sal, pimienta y limón","al gusto"]],
+ steps:["Cocer la patata y las verduras al vapor 15 min.","Hacer la merluza a la plancha o al vapor.","Servir todo junto con un chorrito de limón."]},
+{id:"vc24",name:"Pechuga de pavo con boniato asado y ensalada",meal_type:"comida",kcal:490,protein:45,carbs:40,fat:12,dessert:"Naranja",
+ time:25,difficulty:"fácil",tags:["pavo"],source_type:"VARIANTE",similarity_score:84,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pavo","180 g"],["Boniato","150 g"],["Ensalada verde","al gusto"],["Sal, pimienta y romero","al gusto"]],
+ steps:["Asar el boniato en dados 20 min a 200ºC.","Hacer el pavo a la plancha con sal, pimienta y romero.","Servir con la ensalada verde."]},
+{id:"vc25",name:"Garbanzos con verduras salteadas",meal_type:"comida",kcal:420,protein:18,carbs:60,fat:10,dessert:"Pera",
+ time:15,difficulty:"fácil",tags:["vegetariana","legumbre"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Garbanzos cocidos","200 g"],["Verduras variadas (pimiento, calabacín, cebolla)","200 g"],["Ajo, pimentón y sal","al gusto"]],
+ steps:["Saltear las verduras con el ajo.","Añadir los garbanzos y el pimentón, saltear 3-4 min.","Servir caliente."]},
+{id:"vc26",name:"Salmón con arroz y ensalada de tomate",meal_type:"comida",kcal:560,protein:35,carbs:45,fat:24,dessert:"Fresas",
+ time:15,difficulty:"fácil",tags:["salmón"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Salmón","150 g"],["Arroz cocido","120 g"],["Tomate","al gusto"],["Sal, pimienta y eneldo","al gusto"]],
+ steps:["Hacer el salmón a la plancha con sal, pimienta y eneldo.","Servir con el arroz y una ensalada de tomate aliñada."]},
+{id:"vc27",name:"Wrap de pollo con verduras y hummus",meal_type:"comida",kcal:480,protein:40,carbs:45,fat:14,dessert:"Mandarina",
+ time:12,difficulty:"fácil",tags:["pollo","wrap"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Tortilla de trigo integral","1 ud"],["Pechuga de pollo a la plancha","120 g"],["Hummus","30 g"],["Lechuga, tomate y zanahoria rallada","al gusto"]],
+ steps:["Untar la tortilla con el hummus.","Añadir el pollo troceado y las verduras.","Enrollar bien apretado y servir."]},
+{id:"vc28",name:"Atún con patata cocida y ensalada de pimientos",meal_type:"comida",kcal:420,protein:32,carbs:45,fat:8,dessert:"Piña",
+ time:20,difficulty:"fácil",tags:["atún"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Atún al natural","120 g"],["Patata cocida","200 g"],["Pimientos asados","al gusto"],["Aceite, sal y vinagre","al gusto"]],
+ steps:["Cocer la patata.","Mezclar con el atún y los pimientos asados.","Aliñar con aceite, sal y vinagre. Servir templado o frío."]},
+{id:"vc29",name:"Arroz integral con verduras y huevo",meal_type:"comida",kcal:480,protein:22,carbs:60,fat:14,dessert:"Melón",
+ time:15,difficulty:"fácil",tags:["vegetariana","arroz"],source_type:"VARIANTE",similarity_score:82,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Arroz integral cocido","150 g"],["Verduras salteadas (pimiento, guisante, zanahoria)","150 g"],["Huevo de gallina","2 uds"],["Salsa de soja","al gusto"]],
+ steps:["Saltear las verduras.","Añadir el arroz y el huevo batido, remover hasta cuajar.","Aliñar con un poco de soja y servir."]},
+{id:"vc30",name:"Pechuga de pollo con quinoa y verduras salteadas",meal_type:"comida",kcal:520,protein:48,carbs:45,fat:12,dessert:"Kiwi",
+ time:18,difficulty:"fácil",tags:["pollo","quinoa"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo","150 g"],["Quinoa cocida","120 g"],["Verduras salteadas (pimiento, calabacín)","150 g"],["Sal, pimienta y ajo","al gusto"]],
+ steps:["Hacer el pollo a la plancha con sal, pimienta y ajo.","Saltear las verduras.","Servir todo junto con la quinoa."]},
+
+/* ===== CENA — ORIGINAL (10) ===== */
+{id:"n01",name:"Revuelto de champiñones",meal_type:"cena",kcal:280,protein:29,carbs:8,fat:17,dessert:"Kiwi",
+ time:15,difficulty:"fácil",tags:["huevo"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Claras pasteurizadas","100 g"],["Champiñones","164 g"],["Sal y pimienta","al gusto"]],
+ steps:["Dorar los champiñones en la sartén con sal y pimienta.","Batir los huevos y las claras y verter en la sartén.","Cuajar el revuelto al gusto y servir caliente."]},
+{id:"n02",name:"Merluza al papillote",meal_type:"cena",kcal:240,protein:38,carbs:12,fat:3,dessert:"Piña",
+ time:20,difficulty:"media",tags:["pescado"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Merluza","220 g"],["Zanahoria, cebolla, calabacín","al gusto"],["Limón, ajo en polvo, pimienta y perejil","al gusto"]],
+ steps:["Cortar las verduras en tiras finas.","Colocar sobre papel de horno, la merluza encima con aceite y especias.","Cerrar el paquete, hornear/airfryer a 180ºC 10-12 min.","Servir las verduras con la merluza encima."]},
+{id:"n03",name:"Solomillo de cerdo a la plancha con ensalada de espárragos",meal_type:"cena",kcal:320,protein:53,carbs:6,fat:8,dessert:"Kiwi",
+ time:20,difficulty:"fácil",tags:["cerdo"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Solomillo de cerdo sin grasa","200 g"],["Canónigos","50 g"],["Espárrago blanco","75 g"],["Pimienta, vinagre y orégano","al gusto"]],
+ steps:["Hacer el solomillo a la plancha con pimienta por ambos lados.","Mezclar canónigos y espárragos en una ensaladera.","Aliñar con aceite, vinagre y orégano.","Servir la ensalada como acompañamiento."]},
+{id:"n04",name:"Tortilla francesa",meal_type:"cena",kcal:190,protein:16,carbs:1,fat:13,dessert:"Melón con jamón",
+ time:10,difficulty:"fácil",tags:["huevo"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Sal","al gusto"]],
+ steps:["Batir los huevos con una pizca de sal.","Calentar aceite en una sartén y cuajar por ambos lados.","Servir con la ensalada o guarnición del día."]},
+{id:"n05",name:"Hamburguesa casera",meal_type:"cena",kcal:500,protein:38,carbs:29,fat:23,dessert:"Piña",
+ time:20,difficulty:"fácil",tags:["ternera"],source_type:"ORIGINAL",favorite:true,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pan de hamburguesa","60 g"],["Carne picada de ternera","125 g"],["Queso (Havarti u otro)","37 g"],["Canónigos, tomate, pepinillos","al gusto"]],
+ steps:["Salpimentar la carne, dar forma de hamburguesa.","Hacer en sartén antiadherente con un poco de aceite, colocar el queso encima y fundir.","Montar en el pan con lechuga, tomate y pepinillo.","Opcional: kétchup zero."]},
+{id:"n06",name:"Fajitas de pollo",meal_type:"cena",kcal:700,protein:56,carbs:58,fat:20,dessert:"Piña",
+ time:20,difficulty:"fácil",tags:["pollo"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Fajitas integrales","3 uds"],["Pechuga de pollo","150 g"],["Salteado de verduras","100 g"],["Guacamole","80 g"],["Sal, ajo en polvo, albahaca, orégano y pimienta","al gusto"]],
+ steps:["Cortar el pollo en trozos de bocado y salpimentar.","Hacer el pollo con las verduras en freidora de aire o sartén 15 min a 190ºC.","Calentar las fajitas y rellenar con el pollo, guacamole y verduras."]},
+{id:"n07",name:"Sándwich de jamón y queso",meal_type:"cena",kcal:415,protein:37,carbs:33,fat:12,dessert:"Yogur proteico",
+ time:15,difficulty:"fácil",tags:["jamón"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pan integral de barra","80 g"],["Jamón cocido","100 g"],["Queso Havarti light","37 g"],["Tomate","1 ud"]],
+ steps:["Tostar el pan a la sartén con un poco de aceite.","Añadir el queso encima, tapar hasta fundir.","Incorporar el jamón y el tomate aliñado.","Servir recién hecho."]},
+{id:"n08",name:"Ensalada de boquerones",meal_type:"cena",kcal:180,protein:27,carbs:10,fat:5,dessert:"Fresas",
+ time:15,difficulty:"fácil",tags:["pescado"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Boquerones en conserva","90 g"],["Lechuga, pimiento, tomate, cebolla","al gusto"],["Queso fresco tipo burgos","60 g"],["Vinagreta (vinagre, aceite, orégano, ajo, pimienta)","al gusto"]],
+ steps:["Lavar y trocear las verduras.","Escurrir los boquerones y cortar a la mitad.","Montar el plato con las verduras, el queso y los boquerones.","Rociar con la vinagreta y servir frío."]},
+{id:"n09",name:"Filetes de cerdo con berenjena",meal_type:"cena",kcal:380,protein:46,carbs:12,fat:15,dessert:"Paraguaya",
+ time:15,difficulty:"fácil",tags:["cerdo"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Berenjena","240 g"],["Lomo de cerdo","220 g"],["Sal, pimienta y orégano","al gusto"]],
+ steps:["Cortar la berenjena en rodajas, salar y reposar 5 min, secar.","Hacer la berenjena a la plancha hasta que esté tierna.","Añadir los filetes de cerdo, hacer por ambos lados con especias.","Servir todo junto."]},
+{id:"n10",name:"Fajitas de pavo y queso con tomate",meal_type:"cena",kcal:550,protein:55,carbs:42,fat:16,dessert:"Frambuesas",
+ time:15,difficulty:"fácil",tags:["pavo"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Fajitas integrales","2 uds"],["Pechuga de pavo","100 g"],["Queso Havarti light","74 g"],["Tomate","1,5 uds"],["Especias al gusto","al gusto"]],
+ steps:["Cortar el tomate en rodajas.","Calentar las fajitas y rellenar con el pavo, el queso y el tomate.","Tapar y dejar fundir el queso.","Servir."]},
+
+/* ===== CENA — VARIANTE (20 nuevas) ===== */
+{id:"vn01",name:"Salmón al horno con espárragos",meal_type:"cena",kcal:320,protein:32,carbs:6,fat:18,dessert:"Kiwi",
+ time:20,difficulty:"fácil",tags:["salmón"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Salmón","150 g"],["Espárragos verdes","150 g"],["Limón, sal y pimienta","al gusto"]],
+ steps:["Colocar el salmón y los espárragos en bandeja con aceite y especias.","Hornear 15 min a 200ºC.","Servir con un toque de limón."]},
+{id:"vn02",name:"Tortilla de calabacín con ensalada",meal_type:"cena",kcal:260,protein:17,carbs:8,fat:17,dessert:"Mandarina",
+ time:15,difficulty:"fácil",tags:["huevo"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Calabacín","150 g"],["Ensalada verde","al gusto"]],
+ steps:["Saltear el calabacín en rodajas finas.","Batir los huevos, mezclar con el calabacín y cuajar en la sartén.","Servir con una ensalada verde."]},
+{id:"vn03",name:"Wok de gambas con verduras",meal_type:"cena",kcal:260,protein:32,carbs:15,fat:6,dessert:"Piña",
+ time:15,difficulty:"fácil",tags:["gambas"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Gambas peladas","180 g"],["Verduras variadas para wok","200 g"],["Salsa de soja","al gusto"]],
+ steps:["Saltear las verduras en el wok.","Añadir las gambas y saltear 3-4 min.","Aliñar con la soja y servir caliente."]},
+{id:"vn04",name:"Revuelto de gambas con ajo y perejil",meal_type:"cena",kcal:280,protein:30,carbs:4,fat:16,dessert:"Manzana",
+ time:12,difficulty:"fácil",tags:["huevo","gambas"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Gambas peladas","120 g"],["Ajo y perejil","al gusto"]],
+ steps:["Saltear el ajo picado con las gambas 2-3 min.","Batir los huevos y añadir a la sartén.","Cuajar el revuelto al gusto y servir con perejil fresco."]},
+{id:"vn05",name:"Ensalada de pollo con aguacate",meal_type:"cena",kcal:380,protein:38,carbs:10,fat:20,dessert:"Fresas",
+ time:15,difficulty:"fácil",tags:["pollo","ensalada"],source_type:"VARIANTE",similarity_score:84,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo","150 g"],["Aguacate","80 g"],["Lechuga y tomate","al gusto"]],
+ steps:["Hacer el pollo a la plancha y trocear.","Montar la ensalada con lechuga, tomate y aguacate.","Añadir el pollo y aliñar con aceite y limón."]},
+{id:"vn06",name:"Merluza a la plancha con pisto",meal_type:"cena",kcal:280,protein:38,carbs:12,fat:6,dessert:"Melón",
+ time:25,difficulty:"fácil",tags:["pescado"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Merluza","200 g"],["Pisto de verduras","150 g"],["Sal y pimienta","al gusto"]],
+ steps:["Preparar o calentar el pisto.","Hacer la merluza a la plancha con sal y pimienta.","Servir la merluza sobre el pisto."]},
+{id:"vn07",name:"Wrap de pavo y queso fresco con verduras",meal_type:"cena",kcal:380,protein:34,carbs:32,fat:10,dessert:"Mandarina",
+ time:10,difficulty:"fácil",tags:["pavo"],source_type:"VARIANTE",similarity_score:79,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Tortilla de trigo integral","1 ud"],["Pechuga de pavo en lonchas","100 g"],["Queso fresco tipo burgos","40 g"],["Lechuga y tomate","al gusto"]],
+ steps:["Extender el queso fresco sobre la tortilla.","Añadir el pavo, la lechuga y el tomate.","Enrollar bien apretado y cortar por la mitad."]},
+{id:"vn08",name:"Poke de atún con edamame",meal_type:"cena",kcal:420,protein:40,carbs:35,fat:10,dessert:"Piña",
+ time:15,difficulty:"fácil",tags:["atún","poke"],source_type:"VARIANTE",similarity_score:78,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Atún fresco o al natural","150 g"],["Edamame","80 g"],["Arroz cocido","80 g"],["Pepino y soja","al gusto"]],
+ steps:["Cortar el atún en dados.","Montar el bowl con el arroz, el edamame y el pepino.","Añadir el atún y aliñar con salsa de soja."]},
+{id:"vn09",name:"Tortilla de patata y jamón ligera con ensalada",meal_type:"cena",kcal:420,protein:26,carbs:35,fat:17,dessert:"Pera",
+ time:25,difficulty:"media",tags:["huevo","patata"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Patata cocida","150 g"],["Jamón cocido en dados","40 g"],["Cebolla (opcional)","al gusto"],["Ensalada verde","al gusto"]],
+ steps:["Cocer la patata en rodajas finas con poco aceite.","Batir los huevos y mezclar con la patata y el jamón.","Cuajar en sartén antiadherente con poco aceite.","Servir con ensalada."]},
+{id:"vn10",name:"Pizza casera integral con verduras y pollo",meal_type:"cena",kcal:480,protein:35,carbs:45,fat:15,dessert:"Uvas",
+ time:25,difficulty:"media",tags:["pollo","pizza"],source_type:"VARIANTE",similarity_score:75,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Base de pizza integral","100 g"],["Pechuga de pollo cocida","100 g"],["Verduras variadas","al gusto"],["Queso light rallado","30 g"]],
+ steps:["Cubrir la base con tomate, pollo y verduras.","Añadir el queso por encima.","Hornear 12-15 min a 200ºC hasta dorar.","Servir caliente."]},
+{id:"vn11",name:"Ensalada César ligera con pollo",meal_type:"cena",kcal:350,protein:38,carbs:10,fat:15,dessert:"Mandarina",
+ time:15,difficulty:"fácil",tags:["pollo","ensalada"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo","150 g"],["Lechuga","al gusto"],["Queso parmesano","15 g"],["Salsa césar ligera (base yogur)","al gusto"]],
+ steps:["Hacer el pollo a la plancha y trocear.","Montar la ensalada con la lechuga y el pollo.","Añadir el parmesano y la salsa césar ligera."]},
+{id:"vn12",name:"Sopa de miso con tofu y algas",meal_type:"cena",kcal:220,protein:15,carbs:12,fat:10,dessert:"Kiwi",
+ time:10,difficulty:"fácil",tags:["vegetariana","tofu"],source_type:"VARIANTE",similarity_score:74,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pasta de miso","1 cucharada"],["Tofu firme","100 g"],["Alga wakame","al gusto"],["Cebolleta","al gusto"]],
+ steps:["Disolver el miso en agua caliente sin hervir.","Añadir el tofu en dados y el alga hidratada.","Servir con cebolleta picada."]},
+{id:"vn13",name:"Salteado de pavo con brócoli y anacardos",meal_type:"cena",kcal:350,protein:40,carbs:12,fat:14,dessert:"Melón",
+ time:15,difficulty:"fácil",tags:["pavo"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pavo","150 g"],["Brócoli","150 g"],["Anacardos","15 g"],["Salsa de soja","al gusto"]],
+ steps:["Saltear el pavo troceado, reservar.","Saltear el brócoli al dente.","Mezclar con el pavo y los anacardos, aliñar con soja."]},
+{id:"vn14",name:"Pescado blanco al vapor con verduras",meal_type:"cena",kcal:260,protein:40,carbs:12,fat:4,dessert:"Piña",
+ time:20,difficulty:"fácil",tags:["pescado"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Merluza o rape","200 g"],["Verduras variadas","200 g"],["Limón, sal y pimienta","al gusto"]],
+ steps:["Cocer el pescado y las verduras al vapor 10-12 min.","Aliñar con aceite, limón, sal y pimienta.","Servir caliente."]},
+{id:"vn15",name:"Champiñones rellenos de queso y jamón",meal_type:"cena",kcal:300,protein:26,carbs:8,fat:17,dessert:"Fresas",
+ time:20,difficulty:"fácil",tags:["huevo","champiñón"],source_type:"VARIANTE",similarity_score:76,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Champiñones grandes","250 g"],["Jamón cocido","50 g"],["Queso light rallado","40 g"],["Ajo y perejil","al gusto"]],
+ steps:["Vaciar los champiñones y picar los tallos con el ajo.","Rellenar con el jamón picado, el relleno y el queso.","Hornear 12-15 min a 190ºC.","Servir caliente."]},
+{id:"vn16",name:"Ensalada de garbanzos con huevo y verduras asadas",meal_type:"cena",kcal:380,protein:22,carbs:45,fat:11,dessert:"Manzana",
+ time:25,difficulty:"fácil",tags:["vegetariana","legumbre"],source_type:"VARIANTE",similarity_score:82,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Garbanzos cocidos","150 g"],["Huevo de gallina","1 ud"],["Pimiento, calabacín y berenjena asados","200 g"],["Aceite, sal y vinagre","al gusto"]],
+ steps:["Asar las verduras troceadas 20 min a 200ºC.","Cocer el huevo 10 min, pelar y trocear.","Mezclar los garbanzos con las verduras y el huevo.","Aliñar con aceite, sal y vinagre y servir templado."]},
+{id:"vn17",name:"Gambas al ajillo con ensalada",meal_type:"cena",kcal:260,protein:36,carbs:6,fat:10,dessert:"Naranja",
+ time:10,difficulty:"fácil",tags:["gambas"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Gambas peladas","200 g"],["Ajo y guindilla","al gusto"],["Ensalada verde","al gusto"]],
+ steps:["Dorar el ajo laminado en aceite.","Añadir las gambas y saltear 2-3 min.","Servir con la ensalada verde."]},
+{id:"vn18",name:"Crema de verduras con huevo poché",meal_type:"cena",kcal:260,protein:14,carbs:25,fat:12,dessert:"Pera",
+ time:25,difficulty:"fácil",tags:["vegetariana"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Verduras variadas (calabacín, puerro, patata)","300 g"],["Huevo de gallina","1 ud"],["Sal y pimienta","al gusto"]],
+ steps:["Cocer las verduras y triturar hasta obtener una crema.","Escalfar el huevo en agua con un chorrito de vinagre.","Servir la crema con el huevo poché encima."]},
+{id:"vn19",name:"Rollitos de pavo y queso con espárragos",meal_type:"cena",kcal:260,protein:30,carbs:6,fat:12,dessert:"Mandarina",
+ time:15,difficulty:"fácil",tags:["pavo"],source_type:"VARIANTE",similarity_score:81,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pavo en lonchas finas","100 g"],["Queso fresco","40 g"],["Espárragos verdes","100 g"]],
+ steps:["Cocer los espárragos al vapor.","Enrollar cada loncha de pavo con queso fresco y un espárrago.","Servir frío o pasar unos minutos por la plancha."]},
+{id:"vn20",name:"Revuelto de espárragos trigueros con jamón serrano",meal_type:"cena",kcal:270,protein:28,carbs:6,fat:14,dessert:"Piña",
+ time:15,difficulty:"fácil",tags:["huevo","jamón"],source_type:"VARIANTE",similarity_score:84,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Espárragos trigueros","200 g"],["Huevo de gallina","2 uds"],["Jamón serrano en taquitos","40 g"],["Ajo, sal y pimienta","al gusto"]],
+ steps:["Saltear los espárragos troceados con el ajo hasta que estén tiernos.","Añadir el jamón y saltear 1 min.","Batir los huevos, verter en la sartén y cuajar el revuelto al gusto.","Servir caliente."]},
+
+/* ===== CENA — 10 fáciles y rápidas más ===== */
+{id:"vn21",name:"Merluza a la plancha con ensalada verde",meal_type:"cena",kcal:240,protein:38,carbs:6,fat:6,dessert:"Piña",
+ time:12,difficulty:"fácil",tags:["pescado"],source_type:"VARIANTE",similarity_score:87,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Merluza","200 g"],["Ensalada verde variada","al gusto"],["Sal, pimienta y limón","al gusto"]],
+ steps:["Hacer la merluza a la plancha con sal y pimienta.","Servir con la ensalada verde aliñada y un chorrito de limón."]},
+{id:"vn22",name:"Revuelto de espinacas con huevo",meal_type:"cena",kcal:240,protein:17,carbs:6,fat:16,dessert:"Mandarina",
+ time:10,difficulty:"fácil",tags:["huevo","vegetariana"],source_type:"VARIANTE",similarity_score:85,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Espinacas frescas","150 g"],["Ajo, sal y pimienta","al gusto"]],
+ steps:["Saltear las espinacas con un diente de ajo.","Batir los huevos y añadir a la sartén.","Cuajar el revuelto al gusto y servir."]},
+{id:"vn23",name:"Pechuga de pavo a la plancha con ensalada de tomate",meal_type:"cena",kcal:260,protein:35,carbs:8,fat:8,dessert:"Manzana",
+ time:10,difficulty:"fácil",tags:["pavo"],source_type:"VARIANTE",similarity_score:88,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pavo","150 g"],["Tomate y lechuga","al gusto"],["Sal, pimienta y orégano","al gusto"]],
+ steps:["Hacer el pavo a la plancha con sal, pimienta y orégano.","Servir con la ensalada de tomate aliñada."]},
+{id:"vn24",name:"Tosta integral con aguacate y huevo",meal_type:"cena",kcal:320,protein:14,carbs:28,fat:18,dessert:"Kiwi",
+ time:10,difficulty:"fácil",tags:["vegetariana","huevo"],source_type:"VARIANTE",similarity_score:79,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pan integral","40 g"],["Aguacate","60 g"],["Huevo de gallina","1 ud"],["Sal y pimienta","al gusto"]],
+ steps:["Tostar el pan y untar con el aguacate machacado.","Hacer un huevo a la plancha o poché.","Colocar el huevo sobre la tosta, salpimentar y servir."]},
+{id:"vn25",name:"Ensalada de atún con huevo y verduras",meal_type:"cena",kcal:280,protein:32,carbs:8,fat:14,dessert:"Fresas",
+ time:12,difficulty:"fácil",tags:["atún"],source_type:"VARIANTE",similarity_score:87,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Atún al natural","100 g"],["Huevo de gallina","1 ud"],["Lechuga y tomate","al gusto"],["Aceite, sal y vinagre","al gusto"]],
+ steps:["Cocer el huevo 10 min, pelar y trocear.","Mezclar con el atún, la lechuga y el tomate.","Aliñar con aceite, sal y vinagre. Servir frío."]},
+{id:"vn26",name:"Gambas salteadas con calabacín",meal_type:"cena",kcal:240,protein:34,carbs:8,fat:6,dessert:"Melón",
+ time:12,difficulty:"fácil",tags:["gambas"],source_type:"VARIANTE",similarity_score:86,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Gambas peladas","180 g"],["Calabacín","200 g"],["Ajo, sal y pimienta","al gusto"]],
+ steps:["Saltear el calabacín en rodajas finas con el ajo.","Añadir las gambas y saltear 3-4 min.","Servir caliente."]},
+{id:"vn27",name:"Pollo a la plancha con champiñones salteados",meal_type:"cena",kcal:300,protein:42,carbs:6,fat:10,dessert:"Piña",
+ time:15,difficulty:"fácil",tags:["pollo"],source_type:"VARIANTE",similarity_score:87,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Pechuga de pollo","150 g"],["Champiñones","150 g"],["Ajo, sal y pimienta","al gusto"]],
+ steps:["Hacer el pollo a la plancha con sal y pimienta.","Saltear los champiñones con ajo.","Servir todo junto."]},
+{id:"vn28",name:"Sopa de verduras con pollo desmenuzado",meal_type:"cena",kcal:260,protein:28,carbs:15,fat:8,dessert:"Mandarina",
+ time:20,difficulty:"fácil",tags:["pollo","sopa"],source_type:"VARIANTE",similarity_score:83,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Caldo de verduras con zanahoria, puerro y apio","300 g"],["Pechuga de pollo cocida y desmenuzada","100 g"],["Sal y pimienta","al gusto"]],
+ steps:["Calentar el caldo con las verduras.","Añadir el pollo desmenuzado y calentar 3-4 min.","Servir caliente."]},
+{id:"vn29",name:"Tortilla de espárragos trigueros",meal_type:"cena",kcal:220,protein:16,carbs:6,fat:15,dessert:"Naranja",
+ time:12,difficulty:"fácil",tags:["huevo","vegetariana"],source_type:"VARIANTE",similarity_score:86,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Huevo de gallina","2 uds"],["Espárragos trigueros","150 g"],["Sal y pimienta","al gusto"]],
+ steps:["Saltear los espárragos troceados hasta que estén tiernos.","Batir los huevos con sal, añadir a la sartén y cuajar por ambos lados.","Servir caliente."]},
+{id:"vn30",name:"Salmón ahumado con queso fresco y tostada integral",meal_type:"cena",kcal:320,protein:24,carbs:28,fat:13,dessert:"Kiwi",
+ time:8,difficulty:"fácil",tags:["salmón"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Salmón ahumado","60 g"],["Queso fresco batido","50 g"],["Pan integral","40 g"],["Eneldo (opcional)","al gusto"]],
+ steps:["Tostar el pan integral.","Untar con el queso fresco y colocar el salmón ahumado encima.","Espolvorear con eneldo y servir."]},
+
+/* ===== DESAYUNO — solo kéfir / yogur 0% / queso fresco (6) + opción especial de sábado (1) ===== */
+{id:"d01",name:"Café con leche + bol de kéfir, cereales y cacahuete",meal_type:"desayuno",kcal:450,protein:29,carbs:55,fat:12,
+ time:5,difficulty:"fácil",tags:["kéfir"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Café con leche desnatada","1 vaso"],["Kéfir natural","250 g"],["Frutos rojos (arándanos/frambuesas)","105 g"],["Muesli 0% azúcares","25 g"],["Cacahuete + proteína en polvo","20 g"]],
+ steps:["Mezclar el kéfir con el cacahuete en polvo.","Añadir el muesli y los frutos rojos.","Servir con el café con leche."]},
+{id:"d02",name:"Café con leche + bol de yogur 0% con frutas",meal_type:"desayuno",kcal:470,protein:31,carbs:50,fat:13,
+ time:5,difficulty:"fácil",tags:["yogur"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Café con leche desnatada","1 vaso"],["Yogur proteico 0%","200 g"],["Plátano","140 g"],["Kiwi","150 g"],["Nueces","16 g"]],
+ steps:["Trocear la fruta.","Mezclar con el yogur proteico.","Añadir las nueces y servir con el café con leche."]},
+{id:"d03",name:"Café con leche + bol de queso fresco batido con frutas",meal_type:"desayuno",kcal:460,protein:26,carbs:55,fat:14,
+ time:5,difficulty:"fácil",tags:["queso fresco"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Café con leche desnatada","1 vaso"],["Queso fresco batido desnatado","200 g"],["Plátano","140 g"],["Arándanos","105 g"],["Nueces","16 g"]],
+ steps:["Batir el queso fresco.","Añadir la fruta troceada y las nueces.","Servir con el café con leche."]},
+{id:"d-libre",name:"Desayuno libre",meal_type:"desayuno",kcal:null,protein:null,carbs:null,fat:null,free:true,
+ days:["Domingo"],
+ time:0,difficulty:"fácil",tags:["libre"],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:false,
+ ingredients:[["Lo que te apetezca","—"]],
+ steps:["Día libre: come lo que te apetezca, sin macros fijados.","Si quieres, apúntalo luego en tus notas de Evolución."]},
+{id:"d04",name:"Café con leche + bol de kéfir con frambuesas y nueces",meal_type:"desayuno",kcal:420,protein:26,carbs:48,fat:14,
+ time:5,difficulty:"fácil",tags:["kéfir"],source_type:"VARIANTE",similarity_score:90,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Café con leche desnatada","1 vaso"],["Kéfir natural","250 g"],["Frambuesas","100 g"],["Muesli 0% azúcares","20 g"],["Nueces","15 g"]],
+ steps:["Mezclar el kéfir con el muesli.","Añadir las frambuesas y las nueces por encima.","Servir con el café con leche."]},
+{id:"d05",name:"Café con leche + bol de yogur 0% con mango y chía",meal_type:"desayuno",kcal:300,protein:22,carbs:35,fat:6,
+ time:5,difficulty:"fácil",tags:["yogur"],source_type:"VARIANTE",similarity_score:87,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Café con leche desnatada","1 vaso"],["Yogur proteico 0%","200 g"],["Mango","100 g"],["Semillas de chía","10 g"]],
+ steps:["Trocear el mango.","Mezclar el yogur con la chía y añadir el mango por encima.","Servir con el café con leche."]},
+{id:"d06",name:"Café con leche + bol de queso fresco con kiwi y nueces",meal_type:"desayuno",kcal:380,protein:24,carbs:30,fat:16,
+ time:5,difficulty:"fácil",tags:["queso fresco"],source_type:"VARIANTE",similarity_score:88,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Café con leche desnatada","1 vaso"],["Queso fresco batido desnatado","200 g"],["Kiwi","150 g"],["Nueces","15 g"]],
+ steps:["Batir el queso fresco.","Añadir el kiwi troceado y las nueces.","Servir con el café con leche."]},
+{id:"d07",name:"Batido de açai con plátano y frutos rojos",meal_type:"desayuno",kcal:380,protein:14,carbs:60,fat:8,
+ days:["Sábado"],
+ time:5,difficulty:"fácil",tags:["açai","zumo","batido"],source_type:"VARIANTE",similarity_score:80,favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Puré de açai (sin azúcar añadido)","200 g"],["Plátano","100 g"],["Frutos rojos variados","80 g"],["Yogur 0% o leche","100 ml"]],
+ steps:["Triturar el açai con el plátano, los frutos rojos y el yogur o leche.","Batir hasta conseguir una textura cremosa.","Servir bien frío, opcionalmente con granola por encima."]},
+
+{id:"a01",name:"Tortitas de legumbre",meal_type:"almuerzo",kcal:110,protein:6,carbs:18,fat:1,
+ time:2,difficulty:"fácil",tags:[],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Tortitas de legumbre","4 uds (30 g)"]],steps:["Tomar directamente o con algo de fruta."]},
+{id:"a02",name:"Tortitas de maíz",meal_type:"almuerzo",kcal:105,protein:2,carbs:22,fat:1,
+ time:2,difficulty:"fácil",tags:[],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Tortitas de maíz","4 uds (30 g)"]],steps:["Tomar directamente o con algo de fruta."]},
+
+{id:"m01",name:"Plátano y nueces",meal_type:"merienda",kcal:225,protein:4,carbs:32,fat:10,
+ time:2,difficulty:"fácil",tags:[],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Plátano","140 g"],["Nueces","16 g (5 uds)"]],steps:["Servir juntos."]},
+{id:"m02",name:"Manzana y almendras",meal_type:"merienda",kcal:241,protein:4.5,carbs:37,fat:10,
+ time:2,difficulty:"fácil",tags:[],source_type:"ORIGINAL",favorite:false,times_used:0,last_used:null,calculated:true,
+ ingredients:[["Manzana","240 g"],["Almendra pelada","20 g (10-12 uds)"]],steps:["Servir juntos."]},
+];
+
+/* =================== UTILIDADES =================== */
+function escapeHtml(str){
+  return String(str==null?"":str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`; // fecha LOCAL, no UTC (importante cerca de medianoche en España)
+}
+function numOrNull(v){ if(v===""||v===null||v===undefined) return null; const n=Number(v); return Number.isFinite(n)? n : null; }
+
+/* =================== ESTADO / PERSISTENCIA (v3, con migración) =================== */
+const STATE_VERSION = 3;
+const DEFAULT_STATE = {
+  version: STATE_VERSION,
+  config:{kcal:2010, protein:140, objetivo:"recomp", variedad:"equilibrada",
+    training:{Lunes:"Descanso",Martes:"Fuerza",Miércoles:"Descanso",Jueves:"Fuerza",Viernes:"Descanso",Sábado:"Bici",Domingo:"Descanso"}},
+  currentWeek:null,        // {startDate, days:{Lunes:{desayuno:recipeId,...}}, status:{...}, targetsAtGeneration:{kcal,protein}, stale}
+  weekHistory:[],
+  customRecipes:[],        // recetas creadas por el usuario (source_type USUARIO) — NUNCA la base completa
+  preferences:{},          // { recipeId: 'favorite' | 'disliked' | 'excluded' }
+  usage:{},                // { recipeId: {timesUsed, lastUsed} } — persiste de verdad entre recargas
+  metrics:[],              // {date,weight,fat,waist,notes}
+  supplements:[],          // {id,name,qty,protein,time,days:[...],taken:{'YYYY-MM-DD':true}}
+  shopping:{},             // {ingredientName: {qty:string, checked, cat}}
+  regenNotes:[]            // notas de "Rehacer semana" — de momento solo se guardan, no se interpretan
+};
+
+function migrate(raw){
+  // Sin datos previos: nada que migrar
+  if(!raw) return deepClone(DEFAULT_STATE);
+  let s = raw;
+  const v = s.version || 1;
+
+  if(v < 2){
+    // v1 → v2: separar recetas de usuario de la base completa, mover favoritos sueltos a preferences,
+    // dar forma correcta a los suplementos (days/taken) y limpiar duplicados de historial por guardar config.
+    s.customRecipes = [];
+    if(Array.isArray(s.recipes)){
+      s.recipes.forEach(r=>{ if(r && r.source_type==="USUARIO") s.customRecipes.push(r); });
+    }
+    delete s.recipes;
+
+    s.preferences = s.preferences || {};
+    // recuperar "favorite:true" que pudiera haber en recetas de usuario antiguas
+    s.customRecipes.forEach(r=>{ if(r.favorite) s.preferences[r.id] = "favorite"; });
+
+    s.usage = s.usage || {};
+
+    (s.supplements||[]).forEach(sup=>{
+      if(!Array.isArray(sup.days)) sup.days = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+      if(!sup.taken || typeof sup.taken!=="object") sup.taken = {};
+    });
+
+    // deduplicar semanas de historial idénticas consecutivas (efecto del bug de guardar-config)
+    if(Array.isArray(s.weekHistory) && s.weekHistory.length>1){
+      const dedup=[]; let prevKey=null;
+      s.weekHistory.forEach(w=>{
+        const key = w && w.startDate + JSON.stringify(w.days);
+        if(key!==prevKey) dedup.push(w);
+        prevKey = key;
+      });
+      s.weekHistory = dedup;
+    }
+    s.version = 2;
+  }
+
+  if(v < 3){
+    // v2 → v3: variedad configurable, notas de "rehacer semana", y marcar objetivos de semanas antiguas
+    // sin objetivo registrado (para no compararlas silenciosamente contra el objetivo actual).
+    if(!s.config) s.config = {};
+    if(!s.config.variedad) s.config.variedad = "equilibrada";
+    if(!Array.isArray(s.regenNotes)) s.regenNotes = [];
+    if(s.currentWeek && !s.currentWeek.targetsAtGeneration){
+      s.currentWeek.targetsAtGeneration = {kcal:s.config.kcal, protein:s.config.protein};
+    }
+    s.version = 3;
+  }
+  return Object.assign(deepClone(DEFAULT_STATE), s, {
+    config: Object.assign(deepClone(DEFAULT_STATE.config), s.config||{}, {
+      training: Object.assign(deepClone(DEFAULT_STATE.config.training), (s.config&&s.config.training)||{})
+    })
+  });
+}
+
+let STATE;
+function loadState(){
+  try{
+    const raw = localStorage.getItem("nutriapp_state");
+    if(raw){
+      const parsed = JSON.parse(raw);
+      return migrate(parsed);
+    }
+  }catch(e){ console.warn("Estado corrupto en localStorage, empezando de cero.", e); }
+  return deepClone(DEFAULT_STATE);
+}
+function saveState(){
+  try{ localStorage.setItem("nutriapp_state", JSON.stringify(STATE)); }
+  catch(e){ console.warn("No se pudo guardar el estado", e); toast("No se pudo guardar (almacenamiento lleno)"); }
+}
+STATE = loadState();
+
+/* Recetas: base fija (RECIPES) + recetas de usuario, combinadas sin clonar la base */
+function getRecipes(){ return STATE.customRecipes && STATE.customRecipes.length ? RECIPES.concat(STATE.customRecipes) : RECIPES; }
+function findRecipe(id){ return getRecipes().find(r=>r.id===id); }
+function getPref(id){ return STATE.preferences[id] || null; }
+function setPref(id, pref){
+  if(STATE.preferences[id]===pref) delete STATE.preferences[id]; // pulsar de nuevo quita la preferencia
+  else STATE.preferences[id] = pref;
+  saveState();
+}
+function markUsed(id){
+  const u = STATE.usage[id] || {timesUsed:0,lastUsed:null};
+  u.timesUsed++; u.lastUsed = todayISO();
+  STATE.usage[id] = u;
+}
+function daysSinceUsed(id){
+  const u = STATE.usage[id];
+  if(!u || !u.lastUsed) return null;
+  return Math.floor((Date.now()-new Date(u.lastUsed).getTime())/86400000);
+}
+
+/* Reglas fijas: desayuno según patrón semanal + dos cenas fijas entre semana */
+const FIXED_MEALS = {
+  desayuno:{ Lunes:"d01", Martes:"d01", Miércoles:"d01", Jueves:"d02", Viernes:"d01", Sábado:"d03", Domingo:"d-libre" },
+  cena:{ Jueves:"n05", Domingo:"n06" }
+};
+function fixedIdFor(mt, d){ return (FIXED_MEALS[mt] && FIXED_MEALS[mt][d]) || null; }
+
+/* =================== NAVEGACIÓN =================== */
+function nav(v){
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  document.getElementById("view-"+v).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.toggle("active", x.dataset.v===v));
+  const titles = {semana:["Mi Semana","equilátera · Adrián"],compra:["Lista de la compra",""],recetas:["Recetas",""],evolucion:["Mi evolución",""],suplementos:["Suplementación",""],config:["Configuración",""]};
+  document.getElementById("topTitle").textContent = titles[v][0];
+  document.getElementById("topSub").textContent = titles[v][1];
+  if(v==="compra") renderShopping();
+  if(v==="recetas") renderRecipes();
+  if(v==="evolucion") renderEvolucion();
+  if(v==="suplementos") renderSupplements();
+  if(v==="config") renderConfig();
+  if(v==="semana") renderWeek();
+}
+function toast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(window._toastTimer); window._toastTimer=setTimeout(()=>t.classList.remove("show"),2000);
+}
+
+/* =================== EQUILIBRIO (objetivo vs plan) =================== */
+function equilibrio(actual, objetivo){
+  if(!objetivo) return {cls:"eq-ok",label:"—"};
+  const pct = Math.abs(actual-objetivo)/objetivo;
+  if(pct<=0.05) return {cls:"eq-ok",label:"En objetivo"};
+  if(pct<=0.15) return {cls:"eq-mid",label:"Ligeramente fuera"};
+  return {cls:"eq-bad",label:"Bastante fuera"};
+}
+
+/* =================== GENERADOR SEMANAL INTELIGENTE (día → semana) =================== */
+const SLICES = {desayuno:0.26, almuerzo:0.08, comida:0.35, merienda:0.08, cena:0.23}; // solo para dar forma a candidatos por franja
+const VARIEDAD_MULT = {alta:1.6, equilibrada:1.0, baja:0.4}; // multiplica la penalización por repetición
+
+// Modificadores TEMPORALES de una sola generación, extraídos de la nota de "Rehacer semana" con reglas simples
+// (palabras clave, no lenguaje natural real). Se resetean nada más generar la semana.
+let SESSION_MODS = {excludeTags:[], boostTags:[], preferQuick:false, dayOverrides:{}, summary:[]};
+const NOTE_TAGS = ["pollo","pavo","ternera","cerdo","pescado","atún","salmón","gambas","huevo","legumbre","pasta","arroz","tofu","vegetariana","marisco"];
+function parseRegenNote(note){
+  const mods = {excludeTags:[], boostTags:[], preferQuick:false, dayOverrides:{}, summary:[]};
+  if(!note) return mods;
+  const text = note.toLowerCase();
+  NOTE_TAGS.forEach(tag=>{
+    const excludeRe = new RegExp("(no quiero|sin|nada de|evitar)[^.,;]{0,15}"+tag);
+    const haveRe = new RegExp("(tengo|con)[^.,;]{0,20}"+tag);
+    if(excludeRe.test(text)){ mods.excludeTags.push(tag); mods.summary.push("sin "+tag); }
+    else if(haveRe.test(text)){ mods.boostTags.push(tag); mods.summary.push("priorizando "+tag+" (dijiste que tienes)"); }
+  });
+  if(/rápid|poco tiempo|sin tiempo|prisa/.test(text)){ mods.preferQuick = true; mods.summary.push("recetas más rápidas"); }
+  DIAS.forEach(d=>{
+    if(text.includes(d.toLowerCase()) && /(fuera|no cocino|no ceno|libre)/.test(text)){
+      mods.dayOverrides[d] = "cena";
+      mods.summary.push(d+" sin cena planificada (cena fuera)");
+    }
+  });
+  return mods;
+}
+
+function scoreCandidate(r, ctx){
+  const pref = getPref(r.id);
+  if(pref==="excluded") return -Infinity; // absoluto: nunca debe aparecer
+  let s = 0;
+  s -= Math.abs(r.kcal - ctx.targetKcal)/70;
+  if(pref==="favorite") s += 4;
+  if(pref==="disliked") s -= 10;
+  const days = daysSinceUsed(r.id);
+  const varMult = VARIEDAD_MULT[STATE.config.variedad] || 1;
+  if(days==null) s += 3; else if(days<3) s -= 9*varMult; else if(days<7) s -= 5*varMult; else if(days<14) s -= 2*varMult; else s += 1;
+  const timesThisWeek = ctx.usedThisWeekIds.filter(x=>x===r.id).length;
+  s -= timesThisWeek*6*varMult;
+  if(ctx.usedTodayTags && r.tags && r.tags.length){
+    const overlap = r.tags.filter(t=>ctx.usedTodayTags.has(t)).length;
+    s -= overlap*2*varMult;
+  }
+  if(ctx.trainType==="Fuerza") s += (r.protein-40)/15; // fuerza → prioriza proteína
+  if(ctx.trainType==="Bici" || ctx.trainType==="Cardio") s += (r.carbs-40)/25; // cardio → prioriza hidratos/energía disponible
+  if(ctx.trainType==="Descanso") s -= Math.max(0,(r.kcal-500))/150; // descanso → evita concentrar demasiada energía
+  if(SESSION_MODS.boostTags.length && r.tags && r.tags.some(t=>SESSION_MODS.boostTags.includes(t))) s += 3; // nota "tengo X en casa"
+  if(SESSION_MODS.preferQuick && r.time<=15) s += 2; // nota "recetas rápidas"
+  s += Math.random()*1.2; // desempate suave, no domina la decisión
+  return s;
+}
+function candidatesForMeal(mealType, day, excludeIds){
+  let pool = getRecipes().filter(r=>r.meal_type===mealType && !r.free);
+  pool = pool.filter(r=> getPref(r.id)!=="excluded"); // filtro DURO, no solo de puntuación
+  pool = pool.filter(r=> !r.days || r.days.includes(day));
+  if(SESSION_MODS.excludeTags.length){
+    const filtered = pool.filter(r=> !(r.tags||[]).some(t=>SESSION_MODS.excludeTags.includes(t)));
+    if(filtered.length) pool = filtered; // solo aplicamos la exclusión temporal si deja candidatos suficientes
+  }
+  if(!pool.length) pool = getRecipes().filter(r=>r.meal_type===mealType && !r.free && getPref(r.id)!=="excluded");
+  if(excludeIds) pool = pool.filter(r=>!excludeIds.includes(r.id));
+  return pool;
+}
+function topCandidates(mealType, day, ctx, n){
+  const pool = candidatesForMeal(mealType, day);
+  return pool.map(r=>({r, s:scoreCandidate(r, ctx)})).filter(x=>x.s>-Infinity).sort((a,b)=>b.s-a.s).slice(0,n).map(x=>x.r);
+}
+
+// Puntuación de un DÍA COMPLETO ya montado: esto es lo que de verdad decide qué combinación se queda.
+function scoreDayPlan(planMeals, cfg, trainType, usedThisWeekIds){
+  let kcal=0, protein=0; const tagCount={};
+  planMeals.forEach(r=>{
+    if(!r || r.free) return;
+    kcal+=r.kcal; protein+=r.protein;
+    (r.tags||[]).forEach(t=> tagCount[t]=(tagCount[t]||0)+1);
+  });
+  let s = 0;
+  s -= Math.abs(kcal-cfg.kcal)/40;           // 1) cumplir calorías del día
+  s -= Math.abs(protein-cfg.protein)/8;      // 2) cumplir proteína del día (sobre el TOTAL, no por comida)
+  // variedad dentro del propio día: penaliza repetir el mismo tag principal varias veces
+  Object.values(tagCount).forEach(n=>{ if(n>1) s -= (n-1)*3; });
+  // preferencias y repetición semanal ya vienen incorporadas en cada receta individual (scoreCandidate),
+  // aquí solo añadimos un pequeño extra por variedad de fuentes de proteína en el día
+  return s;
+}
+// Beam search sencillo: construye combinaciones plausibles del día franja a franja, sin explorar todo el espacio.
+function beamSearchDay(d, cfg, trainType, usedThisWeek){
+  const BEAM = 6, CANDS = 4;
+  let beams = [{ meals:{}, ids:[] }];
+  MEAL_TYPES.forEach(([mt])=>{
+    const fixed = fixedIdFor(mt, d);
+    const nextBeams = [];
+    beams.forEach(b=>{
+      if(fixed){
+        const r = findRecipe(fixed);
+        nextBeams.push({ meals:Object.assign({},b.meals,{[mt]:r}), ids:b.ids.concat(fixed) });
+        return;
+      }
+      const target = cfg.kcal*(SLICES[mt]||0.2);
+      const usedTodayTags = new Set(); Object.values(b.meals).forEach(r=>r&&(r.tags||[]).forEach(t=>usedTodayTags.add(t)));
+      const cands = topCandidates(mt, d, {targetKcal:target, usedThisWeekIds:usedThisWeek.concat(b.ids), usedTodayTags, trainType}, CANDS);
+      cands.forEach(r=>{
+        nextBeams.push({ meals:Object.assign({},b.meals,{[mt]:r}), ids:b.ids.concat(r.id) });
+      });
+      if(!cands.length) nextBeams.push(b); // franja sin candidatos: no romper el beam
+    });
+    // recortar al ancho del beam usando la puntuación PARCIAL del día construido hasta ahora
+    nextBeams.sort((a,b)=> scoreDayPlan(Object.values(b.meals),cfg,trainType,usedThisWeek) - scoreDayPlan(Object.values(a.meals),cfg,trainType,usedThisWeek));
+    beams = nextBeams.slice(0, BEAM);
+  });
+  beams.sort((a,b)=> scoreDayPlan(Object.values(b.meals),cfg,trainType,usedThisWeek) - scoreDayPlan(Object.values(a.meals),cfg,trainType,usedThisWeek));
+  return beams[0];
+}
+function generarSemana(){
+  const cfg = STATE.config;
+  // Archivar la semana anterior real (no los cambios de configuración) antes de sustituirla
+  if(STATE.currentWeek){
+    const already = STATE.weekHistory.some(w=>w.startDate===STATE.currentWeek.startDate);
+    if(!already) STATE.weekHistory.push(deepClone(STATE.currentWeek));
+  }
+
+  const days = {}; const status = {};
+  const usedThisWeek = [];
+  const appliedOverrides = Object.assign({}, SESSION_MODS.dayOverrides);
+
+  DIAS.forEach(d=>{
+    const trainType = STATE.config.training[d] || "Descanso";
+    const best = beamSearchDay(d, cfg, trainType, usedThisWeek);
+    days[d]={}; status[d]={};
+    MEAL_TYPES.forEach(([mt])=>{
+      if(SESSION_MODS.dayOverrides[d]===mt){ days[d][mt]=null; status[d][mt]=null; return; } // nota "cena fuera" etc.
+      const r = best.meals[mt];
+      days[d][mt] = r? r.id : null;
+      status[d][mt] = null;
+      if(r) usedThisWeek.push(r.id);
+    });
+  });
+
+  STATE.currentWeek = {startDate: todayISO(), days, status, targetsAtGeneration:{kcal:cfg.kcal, protein:cfg.protein}, stale:false, overrides:appliedOverrides};
+  usedThisWeek.forEach(markUsed);
+  saveState();
+  buildShoppingFromWeek();
+  renderWeek();
+  const summary = SESSION_MODS.summary.slice();
+  SESSION_MODS = {excludeTags:[], boostTags:[], preferQuick:false, dayOverrides:{}, summary:[]}; // los modificadores de la nota solo valen para ESTA generación
+  return summary;
+}
+
+/* =================== RENDER SEMANA =================== */
+// Reparte proteína en: de recetas, de suplementos planificados (programados ese día) y de suplementos
+// REALMENTE tomados (marcados "tomado" en la fecha de hoy). "Planificada" != "consumida".
+function dayTotals(d){
+  const w = STATE.currentWeek; if(!w) return {kcal:0,protein:0,proteinPlanned:0,proteinConsumed:0,hasFree:false,supPlanned:0,supConsumed:0};
+  let kcal=0, protein=0, hasFree=false;
+  MEAL_TYPES.forEach(([mt])=>{
+    const id=w.days[d][mt]; const r=id?findRecipe(id):null;
+    if(r && !r.free){ kcal+=r.kcal; protein+=r.protein; }
+    if(r && r.free) hasFree = true;
+  });
+  const today = todayISO();
+  let supPlanned=0, supConsumed=0;
+  STATE.supplements.forEach(s=>{
+    if(!s.days || s.days.includes(d)){
+      supPlanned += Number(s.protein)||0;
+      // Solo cuenta como "consumido" si la fecha de HOY corresponde a este día de la semana y está marcado tomado
+      if(d===currentDayName() && s.taken && s.taken[today]) supConsumed += Number(s.protein)||0;
+    }
+  });
+  return {
+    kcal:Math.round(kcal),
+    protein:Math.round(protein),               // proteína solo de comidas (siempre real, ya que no depende de "tomar" nada)
+    proteinPlanned:Math.round(protein+supPlanned),   // si tomase todo lo programado
+    proteinConsumed:Math.round(protein+supConsumed), // lo que realmente lleva contabilizado
+    supPlanned:Math.round(supPlanned), supConsumed:Math.round(supConsumed),
+    hasFree
+  };
+}
+function weekCompliance(){
+  const w = STATE.currentWeek; if(!w) return {adherencia:0, nutricion:0, supPct:0};
+  let total=0, done=0;
+  let kcalDevSum=0, protDevSum=0, nutriDays=0;
+  DIAS.forEach(d=>{
+    MEAL_TYPES.forEach(([mt])=>{
+      if(w.days[d][mt]){ total++; if(w.status[d][mt]==="done") done++; else if(w.status[d][mt]==="partial") done+=0.5; }
+    });
+    const t = dayTotals(d);
+    if(!t.hasFree && STATE.config.kcal){
+      kcalDevSum += Math.abs(t.kcal-STATE.config.kcal)/STATE.config.kcal;
+      protDevSum += Math.abs(t.protein-STATE.config.protein)/STATE.config.protein;
+      nutriDays++;
+    }
+  });
+  const adherencia = total? Math.round(done/total*100) : 0;
+  const nutricion = nutriDays? Math.round(100 - ((kcalDevSum+protDevSum)/(2*nutriDays))*100) : 0;
+  let supTotal=0, supTomados=0;
+  const today = todayISO();
+  STATE.supplements.forEach(s=>{
+    (s.days||DIAS).forEach(d=>{ supTotal++; });
+  });
+  STATE.supplements.forEach(s=>{ Object.values(s.taken||{}).forEach(v=>{ if(v) supTomados++; }); });
+  const supPct = supTotal? Math.min(100, Math.round(supTomados/Math.max(1,STATE.supplements.length)*100)) : null;
+  return {adherencia, nutricion: Math.max(0,nutricion), supPct};
+}
+function currentDayName(){
+  const map = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+  return map[new Date().getDay()];
+}
+function renderHoy(){
+  const el = document.getElementById("hoyCard");
+  const w = STATE.currentWeek;
+  if(!w){ el.innerHTML=""; return; }
+  const d = currentDayName();
+  if(!w.days[d]){ el.innerHTML=""; return; }
+  const train = STATE.config.training[d] || "Descanso";
+  let nextMeal = null;
+  for(const [mt,label] of MEAL_TYPES){
+    const id = w.days[d][mt];
+    if(id && w.status[d][mt]!=="done"){ nextMeal = {mt,label,r:findRecipe(id)}; break; }
+  }
+  const t = dayTotals(d);
+  const eqK = t.hasFree? {cls:"eq-mid",label:"Parcial"} : equilibrio(t.kcal, STATE.config.kcal);
+  const supLine = t.supPlanned>0
+    ? (t.supConsumed>0
+        ? `<div class="hoy-sub">Suplementos tomados: +${t.supConsumed} g proteína</div>`
+        : `<div class="hoy-sub">+${t.supPlanned} g proteína de suplemento pendiente (si lo tomas: ${t.proteinPlanned} g)</div>`)
+    : "";
+  el.innerHTML = `<div class="hoy-card">
+    <div class="hoy-top"><span>HOY · ${d} · ${train}</span><span class="eq-badge ${eqK.cls}">${eqK.label}</span></div>
+    ${nextMeal? `<div class="hoy-meal">${nextMeal.label}: ${escapeHtml(nextMeal.r.name)}</div>
+      <div class="hoy-sub">${nextMeal.r.free? "Sin macros fijados — elige lo que te apetezca" : nextMeal.r.kcal+" kcal · "+nextMeal.r.protein+" g prot"}</div>`
+      : `<div class="hoy-meal">Todas las comidas de hoy están registradas ✓</div>`}
+    <div class="hoy-sub" style="margin-top:6px;">Llevas hoy: ${t.kcal} kcal${t.hasFree?' contabilizadas':''} · ${t.protein} g proteína de comida (objetivo ${STATE.config.kcal} kcal · ${STATE.config.protein} g)</div>
+    ${t.hasFree? `<div class="hoy-sub">+ comida libre no contabilizada</div>`:""}
+    ${supLine}
+  </div>`;
+}
+function renderStaleBanner(){
+  const el = document.getElementById("staleBanner");
+  const w = STATE.currentWeek;
+  if(w && w.stale && w.targetsAtGeneration){
+    el.innerHTML = `<div class="stale-banner">
+      <div>
+        <div>Esta semana se generó con <strong>${w.targetsAtGeneration.kcal} kcal · ${w.targetsAtGeneration.protein} g proteína</strong>.</div>
+        <div>Tu objetivo actual es <strong>${STATE.config.kcal} kcal · ${STATE.config.protein} g proteína</strong>. No está optimizada para eso.</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="iniciarGeneracion()">Regenerar</button></div>`;
+  } else el.innerHTML = "";
+}
+function renderWeek(){
+  renderHoy();
+  renderStaleBanner();
+  const last = STATE.metrics[STATE.metrics.length-1];
+  document.getElementById("statPeso").innerHTML = last? last.weight+" <small>kg</small>" : "–";
+  document.getElementById("statGrasa").innerHTML = (last && last.fat!=null)? last.fat+" <small>%</small>" : "–";
+  document.getElementById("statProt").innerHTML = STATE.config.protein+" <small>g</small>";
+  document.getElementById("statCump").innerHTML = STATE.currentWeek? weekCompliance().adherencia+" <small>%</small>" : "–";
+
+  const c = document.getElementById("weekContainer");
+  const toggleRow = document.getElementById("restoSemanaToggle");
+  if(!STATE.currentWeek){ c.innerHTML = '<div class="empty">Aún no has generado una semana.<br>Pulsa "Generar semana" para empezar.</div>'; document.getElementById("resumenSemanal").innerHTML=""; toggleRow.style.display="none"; return; }
+  const w = STATE.currentWeek;
+  const today = currentDayName();
+  const restoDias = DIAS.filter(d=>d!==today);
+  toggleRow.style.display = "flex";
+  document.getElementById("restoSemanaLabel").textContent = restoSemanaExpanded? "Ocultar el resto de la semana" : "Ver el resto de la semana ("+restoDias.length+" días)";
+  document.getElementById("restoSemanaIcon").textContent = restoSemanaExpanded? "▴" : "▾";
+  const diasAMostrar = restoSemanaExpanded? DIAS : (DIAS.includes(today)? [today] : DIAS);
+  c.innerHTML = diasAMostrar.map(d=>renderDayCard(d, w, d===today)).join("");
+  renderResumenSemanal();
+}
+function toggleRestoSemana(){ restoSemanaExpanded = !restoSemanaExpanded; renderWeek(); }
+function renderDayCard(d, w, isToday){
+    const t = dayTotals(d);
+    const train = STATE.config.training[d] || "Descanso";
+    const eqK = t.hasFree? {cls:"eq-mid",label:"Parcial"} : equilibrio(t.kcal, STATE.config.kcal);
+    const eqP = equilibrio(t.protein, STATE.config.protein);
+    const meals = MEAL_TYPES.map(([mt,label])=>{
+      const id = w.days[d][mt]; const r = id?findRecipe(id):null;
+      const stat = w.status[d][mt];
+      const checkClass = stat==="done"?"done":(stat==="partial"?"partial":"");
+      const checkIcon = stat==="done"?"✓":(stat==="partial"?"~":"");
+      if(!r){
+        if(w.overrides && w.overrides[d]===mt){
+          return `<div class="meal-row"><div class="meal-check" style="visibility:hidden;"></div>
+            <div class="meal-info"><div class="mtype">${label}</div><div class="mname" style="color:var(--ink-soft);">Sin planificar — dijiste que esta cena era fuera</div></div></div>`;
+        }
+        return "";
+      }
+      const isFixed = !!fixedIdFor(mt,d);
+      const macrosLine = r.free? "Sin macros fijados — elige lo que te apetezca" : `${r.kcal} kcal · ${r.protein} g prot${r.dessert?' · 🍊 '+escapeHtml(r.dessert):''}`;
+      return `<div class="meal-row">
+        <div class="meal-check ${checkClass}" onclick="toggleStatus('${d}','${mt}')">${checkIcon}</div>
+        <div class="meal-info" onclick="openRecipeModal('${r.id}')">
+          <div class="mtype">${label}</div>
+          <div class="mname">${escapeHtml(r.name)}</div>
+          <div class="mmacros">${macrosLine}</div>
+        </div>
+        <div class="meal-actions">
+          ${isFixed? `<span title="Comida fija" style="font-size:14px;">🔒</span>` : `<button class="icon-btn" onclick="openSwapModal('${d}','${mt}')" title="Cambiar">🔄</button>`}
+        </div>
+      </div>`;
+    }).join("");
+    return `<div class="card day-card" style="${isToday?'border-color:var(--teal-500);':''}">
+      <div class="day-head"><span class="dname">${isToday?'Hoy · ':''}${d}</span><span class="dtrain">${train}</span></div>
+      ${t.hasFree? `<div class="free-note">${d} parcialmente planificado — hay una comida libre no contabilizada en los totales.</div>`:""}
+      <div class="day-macros">
+        <span>🔥 ${t.kcal} / ${STATE.config.kcal} kcal <span class="eq-badge ${eqK.cls}">${eqK.label}</span></span>
+        <span>🥩 ${t.protein}${t.supPlanned>0?'+'+t.supPlanned:''} / ${STATE.config.protein} g <span class="eq-badge ${eqP.cls}">${eqP.label}</span></span>
+      </div>
+      ${meals}
+    </div>`;
+}
+function renderResumenSemanal(){
+  const el = document.getElementById("resumenSemanal");
+  if(!STATE.currentWeek){ el.innerHTML=""; return; }
+  const c = weekCompliance();
+  const help = (msg)=>`<span onclick="toast(${JSON.stringify(msg)})" style="cursor:pointer;color:var(--teal-500);">ⓘ</span>`;
+  el.innerHTML = `<div class="card">
+    <div class="section-title" style="margin-top:0">Resumen de la semana</div>
+    <div class="row-between" style="padding:4px 0;"><span class="small-muted">Adherencia al plan ${help("% de comidas de esta semana marcadas como hechas (✓ cuenta 1, parcial ~ cuenta 0,5).")}</span><strong>${c.adherencia}%</strong></div>
+    <div class="row-between" style="padding:4px 0;"><span class="small-muted">Ajuste nutricional ${help("Qué tan cerca ha quedado cada día de tus objetivos de kcal y proteína. 100% = coincide exacto; baja cuanto más se desvíe.")}</span><strong>${c.nutricion}%</strong></div>
+    ${c.supPct!=null? `<div class="row-between" style="padding:4px 0;"><span class="small-muted">Suplementos tomados ${help("% de suplementos marcados como tomados hoy, sobre el total de suplementos que tienes registrados.")}</span><strong>${c.supPct}%</strong></div>`:""}
+  </div>`;
+}
+function toggleStatus(d,mt){
+  const w = STATE.currentWeek; const cur = w.status[d][mt];
+  w.status[d][mt] = cur===null? "done" : (cur==="done"? "partial" : null);
+  saveState(); renderWeek();
+}
+
+/* =================== SWAP / ALTERNATIVAS (con impacto en el DÍA, no solo receta a receta) =================== */
+function openSwapModal(d,mt){
+  if(fixedIdFor(mt,d)){ toast("Esta comida está fijada y no se puede cambiar"); return; }
+  const w = STATE.currentWeek; const currentId = w.days[d][mt];
+  const currentR = currentId? findRecipe(currentId): null;
+  const trainType = STATE.config.training[d] || "Descanso";
+  let pool = candidatesForMeal(mt, d).filter(r=>r.id!==currentId);
+  const target = currentR? currentR.kcal : STATE.config.kcal*(SLICES[mt]||0.2);
+  const alts = pool.map(r=>({r, s:scoreCandidate(r,{targetKcal:target,usedThisWeekIds:[],usedTodayTags:new Set(),trainType})}))
+    .sort((a,b)=>b.s-a.s).slice(0,5).map(x=>x.r);
+  const html = `<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Cambiar: ${MEAL_TYPES.find(m=>m[0]===mt)[1]} — ${d}</h3>
+    <p class="small-muted">Ordenadas por lo bien que encajan (calorías, preferencias y variedad). Al elegir una verás el impacto en el día antes de confirmar.</p>
+    <div class="alt-list">${alts.map(r=>`
+      <div class="alt-item" onclick="previewSwap('${d}','${mt}','${r.id}')">
+        <div><div style="font-size:13.5px">${escapeHtml(r.name)}</div><div class="small-muted">${r.kcal} kcal · ${r.protein} g prot</div></div>
+        <span style="font-size:18px;color:var(--teal-700)">→</span>
+      </div>`).join("") || '<div class="empty">No hay alternativas disponibles.</div>'}</div>`;
+  openModal(html);
+}
+function previewSwap(d,mt,newId){
+  const w = STATE.currentWeek;
+  const currentId = w.days[d][mt];
+  const currentR = currentId? findRecipe(currentId): null;
+  const newR = findRecipe(newId);
+  const before = dayTotals(d);
+  const afterKcal = before.kcal - (currentR&&!currentR.free?currentR.kcal:0) + (newR&&!newR.free?newR.kcal:0);
+  const afterProt = before.protein - (currentR&&!currentR.free?currentR.protein:0) + (newR&&!newR.free?newR.protein:0);
+  const cfg = STATE.config;
+  const dk = afterKcal-before.kcal, dp = afterProt-before.protein;
+  let verdict, verdictCls;
+  const kcalPct = Math.abs(afterKcal-cfg.kcal)/cfg.kcal, protPct = Math.abs(afterProt-cfg.protein)/cfg.protein;
+  if(kcalPct<=0.1 && protPct<=0.1){ verdict="✓ Buena sustitución"; verdictCls="impact-good"; }
+  else if(afterProt < before.protein - 10){ verdict="⚠ Reduce bastante la proteína del día"; verdictCls="impact-warn"; }
+  else if(kcalPct>0.15){ verdict="⚠ Aumenta/reduce bastante las calorías del día"; verdictCls="impact-warn"; }
+  else { verdict="✓ Sustitución razonable"; verdictCls="impact-good"; }
+  const html = `<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Impacto del cambio — ${d}</h3>
+    <div class="impact-box">
+      <div class="impact-row"><span>ANTES</span><span>${before.kcal} kcal · ${before.protein} g prot</span></div>
+      <div class="impact-row"><span>DESPUÉS</span><span>${Math.round(afterKcal)} kcal · ${Math.round(afterProt)} g prot</span></div>
+      <div class="impact-row"><span>OBJETIVO</span><span>${cfg.kcal} kcal · ${cfg.protein} g</span></div>
+      <div class="impact-row total"><span>IMPACTO</span><span>${dk>=0?'+':''}${Math.round(dk)} kcal · ${dp>=0?'+':''}${Math.round(dp)} g prot</span></div>
+    </div>
+    <div class="impact-verdict ${verdictCls}">${verdict}</div>
+    <div class="two-col" style="margin-top:12px;">
+      <button class="btn btn-outline btn-block" onclick="openSwapModal('${d}','${mt}')">← Volver</button>
+      <button class="btn btn-primary btn-block" onclick="applySwap('${d}','${mt}','${newId}')">Confirmar cambio</button>
+    </div>`;
+  openModal(html);
+}
+function applySwap(d,mt,newId){
+  STATE.currentWeek.days[d][mt] = newId;
+  STATE.currentWeek.status[d][mt] = null;
+  markUsed(newId);
+  saveState(); buildShoppingFromWeek(); closeModal(); renderWeek();
+  toast("Comida actualizada");
+}
+
+/* =================== RECETA — MODAL DETALLE =================== */
+function openRecipeModal(id){
+  const r = findRecipe(id); if(!r) return;
+  const badgeClass = r.source_type==="ORIGINAL"?"badge-original":(r.source_type==="VARIANTE"?"badge-variante":(r.source_type==="IA"?"badge-ia":"badge-usuario"));
+  const pref = getPref(r.id);
+  const html = `<button class="modal-close" onclick="closeModal()">✕</button>
+    <span class="badge ${badgeClass}">${r.source_type}</span>
+    <h3 style="margin-top:8px;">${escapeHtml(r.name)}</h3>
+    <div class="small-muted">${r.time} min · ${r.difficulty}</div>
+    ${r.free? '<div class="macro-pills"><span class="pill">Sin macros fijados</span></div>' : `<div class="macro-pills">
+      <span class="pill">${r.kcal} kcal</span><span class="pill">🥩 ${r.protein} g prot</span>
+      <span class="pill">🍞 ${r.carbs} g carb</span><span class="pill">🥑 ${r.fat} g grasa</span>
+    </div>`}
+    ${r.calculated?'<div class="small-muted">⚠️ Valores nutricionales calculados a partir de los ingredientes (no exactos).</div>':""}
+    ${r.dessert?`<div class="pill" style="background:var(--cream);color:var(--coral);margin-top:6px;display:inline-block;">🍊 Postre: ${escapeHtml(r.dessert)}</div>`:""}
+    ${r.days?`<div class="small-muted" style="margin-top:6px;">📅 Reservada para: ${r.days.join(", ")}</div>`:""}
+    <div class="section-title">Ingredientes</div>
+    <ul class="ing-list">${r.ingredients.map(i=>`<li><span>${escapeHtml(i[0])}</span><span>${escapeHtml(i[1])}</span></li>`).join("")}</ul>
+    <div class="section-title">Elaboración</div>
+    <ol class="step-list">${r.steps.map(s=>`<li>${escapeHtml(s)}</li>`).join("")}</ol>
+    <div class="section-title">Preferencia</div>
+    <div class="small-muted" style="margin-bottom:6px;">Favorita: aparece más a menudo. No me gusta: aparece menos, pero puede salir si hace falta. Excluir: nunca vuelve a aparecer en el generador.</div>
+    <div class="pref-btns">
+      <button class="pref-btn ${pref==='favorite'?'on':''}" onclick="setPrefAndRefresh('${r.id}','favorite')">❤️ Favorita</button>
+      <button class="pref-btn ${pref==='disliked'?'on':''}" onclick="setPrefAndRefresh('${r.id}','disliked')">🚫 No me gusta</button>
+      <button class="pref-btn ${pref==='excluded'?'on':''}" onclick="setPrefAndRefresh('${r.id}','excluded')">⛔ No volver a mostrar</button>
+    </div>
+    ${(r.source_type==="USUARIO"||r.source_type==="IA")? `<div class="two-col" style="margin-top:12px;">
+      <button class="btn btn-outline btn-block" onclick="openEditRecipe('${r.id}')">✏️ Editar</button>
+      <button class="btn btn-block" style="background:#f6e0db;color:var(--coral);" onclick="deleteCustomRecipe('${r.id}')">🗑️ Eliminar</button>
+    </div>` : ""}`;
+  openModal(html);
+}
+function setPrefAndRefresh(id, pref){ setPref(id, pref); openRecipeModal(id); renderRecipes(); }
+
+/* =================== MODAL genérico =================== */
+function openModal(html){ document.getElementById("modalContent").innerHTML=html; document.getElementById("modalBg").classList.add("active"); }
+function closeModal(){ document.getElementById("modalBg").classList.remove("active"); }
+function closeModalBg(e){ if(e.target.id==="modalBg") closeModal(); }
+// Confirmación genérica para acciones que no se pueden deshacer, o que sustituyen trabajo ya hecho.
+function confirmAction(message, onConfirmFnName, ...args){
+  const argsAttr = args.map(a=>`'${String(a).replace(/'/g,"\\'")}'`).join(",");
+  openModal(`<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>¿Seguro?</h3>
+    <p style="font-size:13.5px;line-height:1.5;">${escapeHtml(message)}</p>
+    <div class="two-col" style="margin-top:14px;">
+      <button class="btn btn-outline btn-block" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-block" style="background:#f6e0db;color:var(--coral);" onclick="closeModal();${onConfirmFnName}(${argsAttr})">Sí, continuar</button>
+    </div>`);
+}
+
+/* =================== RECETAS: LISTA =================== */
+let restoSemanaExpanded = false;
+let recipeFilter = "todas";
+function renderRecipeTabs(){
+  const tabs = [["todas","Todas"],["desayuno","Desayuno"],["almuerzo","Almuerzo"],["comida","Comida"],["merienda","Merienda"],["cena","Cena"],["fav","❤️ Favoritas"],["excluded","⛔ Excluidas"]];
+  document.getElementById("recipeTabs").innerHTML = tabs.map(([k,l])=>
+    `<button class="tab ${recipeFilter===k?'active':''}" onclick="setRecipeFilter('${k}')">${l}</button>`).join("");
+}
+function setRecipeFilter(k){ recipeFilter=k; renderRecipes(); }
+function renderRecipes(){
+  renderRecipeTabs();
+  let list = getRecipes().filter(r=>!r.free);
+  if(recipeFilter==="fav") list = list.filter(r=>getPref(r.id)==="favorite");
+  else if(recipeFilter==="excluded") list = list.filter(r=>getPref(r.id)==="excluded");
+  else if(recipeFilter!=="todas") list = list.filter(r=>r.meal_type===recipeFilter);
+  else list = list.filter(r=>getPref(r.id)!=="excluded");
+  const q = (document.getElementById("recipeSearch").value||"").trim().toLowerCase();
+  if(q) list = list.filter(r=>r.name.toLowerCase().includes(q) || (r.tags||[]).some(t=>t.toLowerCase().includes(q)));
+  document.getElementById("recipeList").innerHTML = list.map(r=>{
+    const pref = getPref(r.id);
+    const star = pref==="favorite"?"fav":"";
+    return `<div class="recipe-item">
+      <div onclick="openRecipeModal('${r.id}')" style="flex:1;min-width:0;">
+        <div class="rname">${escapeHtml(r.name)}${pref==='disliked'?' 🚫':''}${pref==='excluded'?' ⛔':''}</div>
+        <div class="rtag">${r.meal_type} · ${r.source_type}</div>
+      </div>
+      <div class="rmacros">${r.kcal} kcal<br>${r.protein} g prot</div>
+      <button class="star ${star}" onclick="setPref('${r.id}','favorite');renderRecipes();">★</button>
+    </div>`;
+  }).join("") || '<div class="empty">No hay recetas en esta categoría.</div>';
+}
+function openNewRecipe(editId){
+  const editing = editId? STATE.customRecipes.find(r=>r.id===editId) : null;
+  const html = `<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>${editing? "✏️ Editar receta" : "+ Nueva receta"}</h3>
+    <input type="hidden" id="nrEditId" value="${editing?editing.id:""}">
+    <div class="field"><label>Nombre</label><input id="nrName" value="${editing?escapeHtml(editing.name):""}"></div>
+    <div class="field"><label>Tipo de comida</label>
+      <select id="nrType">${["desayuno","almuerzo","comida","merienda","cena"].map(mt=>
+        `<option value="${mt}" ${editing&&editing.meal_type===mt?'selected':(!editing&&mt==='comida'?'selected':'')}>${mt[0].toUpperCase()+mt.slice(1)}</option>`).join("")}</select></div>
+    <div class="two-col">
+      <div class="field"><label>Kcal</label><input type="number" min="0" id="nrKcal" value="${editing?editing.kcal:""}"></div>
+      <div class="field"><label>Proteína (g)</label><input type="number" min="0" id="nrProt" value="${editing?editing.protein:""}"></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Carbohidratos (g)</label><input type="number" min="0" id="nrCarb" value="${editing?editing.carbs:""}"></div>
+      <div class="field"><label>Grasas (g)</label><input type="number" min="0" id="nrFat" value="${editing?editing.fat:""}"></div>
+    </div>
+    <div class="field"><label>Ingredientes (uno por línea: nombre — cantidad)</label><textarea id="nrIng" placeholder="Pollo — 150 g&#10;Arroz — 100 g">${editing?editing.ingredients.map(i=>i[0]+" — "+i[1]).join("\n"):""}</textarea></div>
+    <div class="field"><label>Elaboración (un paso por línea)</label><textarea id="nrSteps">${editing?editing.steps.join("\n"):""}</textarea></div>
+    <div id="nrError" class="err-text" style="display:none;"></div>
+    <button class="btn btn-primary btn-block" onclick="saveNewRecipe()">${editing? "Guardar cambios":"Guardar receta"}</button>`;
+  openModal(html);
+}
+function openEditRecipe(id){ closeModal(); openNewRecipe(id); }
+function saveNewRecipe(){
+  const errEl = document.getElementById("nrError");
+  const editId = document.getElementById("nrEditId").value || null;
+  const name = document.getElementById("nrName").value.trim();
+  const kcal = numOrNull(document.getElementById("nrKcal").value);
+  const prot = numOrNull(document.getElementById("nrProt").value);
+  const mealType = document.getElementById("nrType").value;
+  if(!name){ errEl.textContent="Ponle un nombre a la receta."; errEl.style.display="block"; return; }
+  if(kcal===null || kcal<=0 || kcal>3000){ errEl.textContent="Introduce unas kcal razonables (entre 1 y 3000)."; errEl.style.display="block"; return; }
+  if(prot===null || prot<0 || prot>300){ errEl.textContent="Introduce una proteína razonable (0-300 g)."; errEl.style.display="block"; return; }
+  if(!["desayuno","almuerzo","comida","merienda","cena"].includes(mealType)){ errEl.textContent="Tipo de comida no válido."; errEl.style.display="block"; return; }
+  const ing = document.getElementById("nrIng").value.split("\n").filter(x=>x.trim()).map(l=>{
+    const parts = l.split("—").map(x=>x.trim()); return [parts[0]||l, parts[1]||""];
+  });
+  if(!ing.length){ errEl.textContent="Añade al menos un ingrediente."; errEl.style.display="block"; return; }
+  errEl.style.display="none";
+  const steps = document.getElementById("nrSteps").value.split("\n").filter(x=>x.trim());
+  const carbs = numOrNull(document.getElementById("nrCarb").value) ?? 0;
+  const fat = numOrNull(document.getElementById("nrFat").value) ?? 0;
+  if(editId){
+    const r = STATE.customRecipes.find(x=>x.id===editId);
+    if(r) Object.assign(r, {name, meal_type:mealType, kcal, protein:prot, carbs, fat, ingredients:ing, steps: steps.length?steps:["—"]});
+    saveState(); closeModal(); renderRecipes(); renderWeek(); toast("Receta actualizada");
+  } else {
+    const r = {
+      id:"u"+Date.now(), name, meal_type:mealType, kcal, protein:prot, carbs, fat,
+      time:15, difficulty:"fácil", tags:[], source_type:"USUARIO", calculated:false,
+      ingredients: ing, steps: steps.length? steps:["—"]
+    };
+    STATE.customRecipes.push(r);
+    saveState(); closeModal(); renderRecipes(); toast("Receta añadida");
+  }
+}
+function deleteCustomRecipe(id){
+  confirmAction("Esta receta se eliminará de tu biblioteca. Si está usada en la semana actual, seguirá apareciendo ahí hasta que la cambies.", "deleteCustomRecipeConfirmed", id);
+}
+function deleteCustomRecipeConfirmed(id){
+  STATE.customRecipes = STATE.customRecipes.filter(r=>r.id!==id);
+  delete STATE.preferences[id]; delete STATE.usage[id];
+  saveState(); renderRecipes(); toast("Receta eliminada");
+}
+
+/* =================== CREAR RECETA CON IA (Anthropic o OpenAI, a elegir) =================== */
+// La clave de API es del propio usuario y se guarda SOLO en este navegador (localStorage aparte de STATE,
+// para que nunca acabe dentro de una copia de seguridad exportada). Esta app es un archivo estático sin
+// backend: la llamada va directa desde el navegador a la API elegida, con la clave del propio usuario.
+const AI_MODELS = {
+  anthropic: [["claude-sonnet-5","claude-sonnet-5 (recomendado)"],["claude-haiku-4-5-20251001","claude-haiku-4-5 (rápido/barato)"],["claude-opus-5","claude-opus-5 (más potente)"]],
+  openai: [["gpt-4o-mini","gpt-4o-mini (recomendado)"],["gpt-4o","gpt-4o (más potente)"],["gpt-4.1-mini","gpt-4.1-mini"]]
+};
+function getAIKey(provider){ return localStorage.getItem("equilatera_ai_key_"+provider) || ""; }
+function setAIKey(provider, k){ if(k) localStorage.setItem("equilatera_ai_key_"+provider, k); else localStorage.removeItem("equilatera_ai_key_"+provider); }
+function getAIProvider(){ return localStorage.getItem("equilatera_ai_provider") || "anthropic"; }
+function updateAIModelOptions(){
+  const provider = document.getElementById("aiProvider").value;
+  localStorage.setItem("equilatera_ai_provider", provider);
+  document.getElementById("aiModel").innerHTML = AI_MODELS[provider].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  document.getElementById("aiKey").value = getAIKey(provider);
+  document.getElementById("aiKey").placeholder = provider==="openai" ? "sk-..." : "sk-ant-...";
+}
+function openAIRecipeBox(){
+  const provider = getAIProvider();
+  const html = `<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>✨ Crear receta con IA</h3>
+    <div class="ai-box">
+      <div class="small-muted">Esto llama directamente desde tu navegador a la API elegida con tu propia clave. No hay servidor de por medio: tu clave se guarda solo en este dispositivo y nunca se incluye en la copia de seguridad que exportas. El uso consume tus propios créditos de API.</div>
+    </div>
+    <div class="field"><label>Proveedor</label>
+      <select id="aiProvider" onchange="updateAIModelOptions()">
+        <option value="anthropic" ${provider==="anthropic"?"selected":""}>Anthropic (Claude)</option>
+        <option value="openai" ${provider==="openai"?"selected":""}>OpenAI (ChatGPT)</option>
+      </select></div>
+    <div class="field"><label>Tu clave de API</label><input type="password" id="aiKey" value="${escapeHtml(getAIKey(provider))}" placeholder="${provider==='openai'?'sk-...':'sk-ant-...'}"></div>
+    <div class="field"><label>Modelo</label><select id="aiModel">${AI_MODELS[provider].map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select></div>
+    <div class="field"><label>Tipo de comida</label>
+      <select id="aiType"><option value="desayuno">Desayuno</option><option value="almuerzo">Almuerzo</option>
+      <option value="comida" selected>Comida</option><option value="merienda">Merienda</option><option value="cena">Cena</option></select></div>
+    <div class="field"><label>Describe lo que quieres</label>
+      <textarea id="aiPrompt" placeholder='Ej: "algo con pollo y quinoa, rápido, sin lactosa" o "una cena vegetariana con huevo"'></textarea></div>
+    <div id="aiError" class="err-text" style="display:none;"></div>
+    <button class="btn btn-primary btn-block" id="aiGenBtn" onclick="generarRecetaIA()">Generar receta</button>
+    <div id="aiPreview"></div>`;
+  openModal(html);
+}
+function buildRecipeSystemPrompt(mealType){
+  return `Eres un nutricionista que crea recetas sanas, mediterráneas, fáciles de preparar (nada frito, evita ultraprocesados salvo alternativas comerciales sanas como pasta fresca con pesto). Responde ÚNICAMENTE con un JSON válido, sin texto adicional ni bloques de código, con esta forma exacta:
+{"name":"...", "kcal":numero, "protein":numero, "carbs":numero, "fat":numero, "time":numero_minutos, "difficulty":"fácil|media", "dessert":"nombre de una fruta o null", "ingredients":[["ingrediente","cantidad"], ...], "steps":["paso 1","paso 2", ...], "tags":["tag1","tag2"]}
+El tipo de comida es: ${mealType}. Las kcal y macros deben ser una estimación razonable a partir de los ingredientes.`;
+}
+async function callAnthropicAPI(key, model, systemPrompt, userPrompt){
+  let resp;
+  try{
+    resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "x-api-key": key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body: JSON.stringify({ model, max_tokens: 1000, system: systemPrompt, messages: [{role:"user", content: userPrompt}] })
+    });
+  }catch(networkErr){
+    throw new Error("No se pudo conectar con la API de Anthropic (error de red o de CORS). Comprueba tu conexión; si persiste, puede que tu navegador esté bloqueando la llamada.");
+  }
+  if(!resp.ok){ const errBody = await resp.text(); throw new Error("La API respondió con error ("+resp.status+"). Revisa tu clave. "+errBody.slice(0,150)); }
+  const data = await resp.json();
+  const textBlock = (data.content||[]).find(b=>b.type==="text");
+  if(!textBlock) throw new Error("La API no devolvió texto.");
+  return textBlock.text;
+}
+async function callOpenAIAPI(key, model, systemPrompt, userPrompt){
+  let resp;
+  try{
+    resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+key },
+      body: JSON.stringify({
+        model, max_tokens: 1000, response_format:{type:"json_object"},
+        messages: [{role:"system", content: systemPrompt}, {role:"user", content: userPrompt}]
+      })
+    });
+  }catch(networkErr){
+    // La API de OpenAI, a diferencia de la de Anthropic, no permite llamadas directas desde el navegador
+    // (no responde con las cabeceras CORS necesarias) — esto casi siempre es la causa real de "load failed".
+    throw new Error("No se pudo conectar con la API de OpenAI desde el navegador. OpenAI no permite llamadas directas desde el navegador por CORS — esto no tiene solución desde aquí sin pasar por un servidor intermedio. Prueba con el proveedor Anthropic (Claude), que sí lo permite.");
+  }
+  if(!resp.ok){ const errBody = await resp.text(); throw new Error("La API respondió con error ("+resp.status+"). Revisa tu clave. "+errBody.slice(0,150)); }
+  const data = await resp.json();
+  const text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  if(!text) throw new Error("La API no devolvió texto.");
+  return text;
+}
+async function generarRecetaIA(){
+  const errEl = document.getElementById("aiError");
+  const provider = document.getElementById("aiProvider").value;
+  const key = document.getElementById("aiKey").value.trim();
+  const mealType = document.getElementById("aiType").value;
+  const model = document.getElementById("aiModel").value;
+  const userPrompt = document.getElementById("aiPrompt").value.trim();
+  errEl.style.display = "none";
+  if(!key){ errEl.textContent="Introduce tu clave de API para poder generar recetas."; errEl.style.display="block"; return; }
+  if(!userPrompt){ errEl.textContent="Describe qué tipo de receta quieres."; errEl.style.display="block"; return; }
+  setAIKey(provider, key);
+  const btn = document.getElementById("aiGenBtn");
+  const original = btn.textContent;
+  btn.disabled = true; btn.textContent = "Generando…";
+  const systemPrompt = buildRecipeSystemPrompt(mealType);
+  try{
+    const rawText = provider==="openai"
+      ? await callOpenAIAPI(key, model, systemPrompt, userPrompt)
+      : await callAnthropicAPI(key, model, systemPrompt, userPrompt);
+    let raw = rawText.trim().replace(/^```json/i,"").replace(/^```/,"").replace(/```$/,"").trim();
+    const parsed = JSON.parse(raw);
+    if(!parsed.name || !Array.isArray(parsed.ingredients) || !Array.isArray(parsed.steps)){
+      throw new Error("La receta generada no tiene el formato esperado.");
+    }
+    window.__aiDraft = {
+      id:"ia"+Date.now(), name:String(parsed.name), meal_type:mealType,
+      kcal: Number(parsed.kcal)||0, protein:Number(parsed.protein)||0,
+      carbs:Number(parsed.carbs)||0, fat:Number(parsed.fat)||0,
+      time:Number(parsed.time)||15, difficulty: parsed.difficulty||"fácil",
+      dessert: parsed.dessert && parsed.dessert!=="null" ? String(parsed.dessert) : null,
+      tags: Array.isArray(parsed.tags)? parsed.tags.map(String) : [],
+      source_type:"IA", calculated:true, favorite:false, times_used:0, last_used:null,
+      ingredients: parsed.ingredients.map(i=>[String(i[0]||""), String(i[1]||"")]),
+      steps: parsed.steps.map(String)
+    };
+    renderAIPreview();
+  }catch(e){
+    errEl.textContent = "No se pudo generar la receta: " + e.message;
+    errEl.style.display = "block";
+  }finally{
+    btn.disabled = false; btn.textContent = original;
+  }
+}
+function renderAIPreview(){
+  const r = window.__aiDraft; if(!r) return;
+  document.getElementById("aiPreview").innerHTML = `
+    <div class="section-title">Vista previa — revísala antes de guardar</div>
+    <h3 style="margin-top:4px;">${escapeHtml(r.name)}</h3>
+    <div class="macro-pills">
+      <span class="pill">${r.kcal} kcal</span><span class="pill">🥩 ${r.protein} g prot</span>
+      <span class="pill">🍞 ${r.carbs} g carb</span><span class="pill">🥑 ${r.fat} g grasa</span>
+    </div>
+    ${r.dessert?`<div class="pill" style="background:var(--cream);color:var(--coral);display:inline-block;">🍊 Postre: ${escapeHtml(r.dessert)}</div>`:""}
+    <div class="section-title">Ingredientes</div>
+    <ul class="ing-list">${r.ingredients.map(i=>`<li><span>${escapeHtml(i[0])}</span><span>${escapeHtml(i[1])}</span></li>`).join("")}</ul>
+    <div class="section-title">Elaboración</div>
+    <ol class="step-list">${r.steps.map(s=>`<li>${escapeHtml(s)}</li>`).join("")}</ol>
+    <div class="two-col" style="margin-top:10px;">
+      <button class="btn btn-outline btn-block" onclick="openAIRecipeBox()">↺ Generar otra</button>
+      <button class="btn btn-primary btn-block" onclick="guardarRecetaIA()">Guardar receta</button>
+    </div>`;
+}
+function guardarRecetaIA(){
+  if(!window.__aiDraft) return;
+  STATE.customRecipes.push(window.__aiDraft);
+  saveState();
+  window.__aiDraft = null;
+  closeModal(); renderRecipes();
+  toast("Receta de IA añadida a tu biblioteca");
+}
+
+/* =================== LISTA DE LA COMPRA (con normalización de unidades) =================== */
+// purchaseName: agrupa de forma SEGURA solo variantes de nombre conocidas y equivalentes del mismo producto comercial.
+// Es una lista curada a mano — nunca se agrupan dos ingredientes por parecido de texto/difuso, solo por alias exactos.
+const PURCHASE_ALIASES = {
+  "pechuga de pollo sin piel":"Pechuga de pollo","pollo pechuga sin piel":"Pechuga de pollo","pechuga de pollo":"Pechuga de pollo",
+  "pechuga de pavo sin piel":"Pechuga de pavo","pavo pechuga sin piel":"Pechuga de pavo","pechuga de pavo":"Pechuga de pavo",
+  "huevo de gallina":"Huevos","huevo":"Huevos",
+  "atún al natural":"Atún en conserva al natural","atún conserva al natural":"Atún en conserva al natural","atún conserva al natural escurrido":"Atún en conserva al natural",
+  "garbanzos en conserva":"Garbanzos cocidos","garbanzos cocidos":"Garbanzos cocidos",
+  "lentejas en conserva":"Lentejas cocidas","lentejas cocidas":"Lentejas cocidas"
+};
+function purchaseNameFor(name){
+  const key = name.trim().toLowerCase();
+  return PURCHASE_ALIASES[key] || name;
+}
+const CATEGORIES = {
+  "Carnes/Aves":["pollo","pavo","ternera","cerdo","carne","jamón"],
+  "Pescado/Marisco":["merluza","atún","boquer","pulpo","sepia","salmón","gamba","langostino"],
+  "Huevos/Lácteos":["huevo","queso","leche","yogur","kéfir"],
+  "Legumbres/Cereales":["garbanzo","lenteja","arroz","pasta","gnocchi","ñoqui","pan","fajita","tortita","quinoa","boniato"],
+  "Verduras/Hortalizas":["tomate","cebolla","pimiento","champiñ","calabacín","espárrago","canónigo","berenjena","ajo","zanahoria","lechuga","guisante","seta","espinaca","brócoli","puerro"],
+  "Frutas":["plátano","manzana","kiwi","mandarina","piña","fresa","melón","sandía","uva","naranja","pera","mango","nectarina","paraguaya","frambuesa","granada","açai"],
+  "Otros":[]
+};
+function categorize(name){
+  const n = name.toLowerCase();
+  for(const cat in CATEGORIES){ if(CATEGORIES[cat].some(k=>n.includes(k))) return cat; }
+  return "Otros";
+}
+// Convierte una cantidad textual a {value, unit} normalizada cuando es un formato simple y seguro; si no, devuelve null.
+const UNIT_ALIASES = {g:"g", gr:"g", gramos:"g", kg:"g", ml:"ml", l:"ml", litro:"ml", litros:"ml",
+  ud:"ud", uds:"ud", "unidad":"ud", "unidades":"ud"};
+function parseQty(qtyStr){
+  const s = (qtyStr||"").trim().toLowerCase();
+  const m = s.match(/^(\d+([.,]\d+)?)\s*(kg|g|gr|gramos|l|litro|litros|ml|uds?|unidades?)\b/);
+  if(!m) return null;
+  let value = parseFloat(m[1].replace(",", "."));
+  let unit = UNIT_ALIASES[m[3]] || null;
+  if(!unit) return null;
+  if(m[3]==="kg") value *= 1000;
+  if(m[3]==="l" || m[3]==="litro" || m[3]==="litros") value *= 1000;
+  return {value, unit};
+}
+function formatQty(value, unit){
+  if(unit==="ud") return Math.round(value)+" ud";
+  const rounded = value>=100? Math.round(value/10)*10 : Math.round(value);
+  return rounded+" "+unit;
+}
+function buildShoppingFromWeek(){
+  const w = STATE.currentWeek; if(!w) return;
+  const numeric = {};   // name -> {value, unit}
+  const textual = {};   // name -> [textos sin normalizar]
+  DIAS.forEach(d=> MEAL_TYPES.forEach(([mt])=>{
+    const id = w.days[d][mt]; const r = id?findRecipe(id):null;
+    if(!r || r.free) return;
+    const addItem = (rawName, qty)=>{
+      const name = purchaseNameFor(rawName); // normaliza a nombre de compra cuando el alias es seguro y conocido
+      const parsed = parseQty(qty);
+      if(parsed){
+        if(!numeric[name]) numeric[name] = {value:0, unit:parsed.unit};
+        if(numeric[name].unit===parsed.unit) numeric[name].value += parsed.value;
+        else { if(!textual[name]) textual[name]=[]; textual[name].push(qty); } // unidades distintas: no mezclar
+      } else {
+        if(!textual[name]) textual[name]=[];
+        textual[name].push(qty);
+      }
+    };
+    r.ingredients.forEach(([name,qty])=> addItem(name, qty));
+    if(r.dessert && r.dessert!=="Yogur proteico") addItem(r.dessert, "1 ud");
+  }));
+  const shopping = {};
+  const names = new Set([...Object.keys(numeric), ...Object.keys(textual)]);
+  names.forEach(name=>{
+    let qtyDisplay = "";
+    if(numeric[name]) qtyDisplay = formatQty(numeric[name].value, numeric[name].unit);
+    if(textual[name] && textual[name].length){
+      qtyDisplay = qtyDisplay? qtyDisplay+" + "+textual[name].join(" + ") : textual[name].join(" + ");
+    }
+    const prev = STATE.shopping[name];
+    shopping[name] = {qty:qtyDisplay, checked: prev?prev.checked:false, cat: categorize(name)};
+  });
+  STATE.shopping = shopping;
+  saveState();
+}
+function resetShopping(){
+  confirmAction("Se desmarcarán todos los productos de la lista como comprados.", "resetShoppingConfirmed");
+}
+function resetShoppingConfirmed(){
+  Object.values(STATE.shopping).forEach(i=>i.checked=false); saveState(); renderShopping();
+}
+let shopFilter = "todos";
+function setShopFilter(f){ shopFilter = f; renderShopping(); }
+function renderShopping(){
+  const items = STATE.shopping;
+  const allNames = Object.keys(items);
+  const total = allNames.length;
+  const doneCount = allNames.filter(n=>items[n].checked).length;
+  document.getElementById("shopCounter").textContent = total? `${doneCount} de ${total} comprados` : "";
+  ["shopFilterAll","shopFilterPend","shopFilterDone"].forEach(id=>document.getElementById(id).classList.remove("active"));
+  document.getElementById(shopFilter==="todos"?"shopFilterAll":shopFilter==="pendientes"?"shopFilterPend":"shopFilterDone").classList.add("active");
+
+  let names = allNames;
+  if(shopFilter==="pendientes") names = names.filter(n=>!items[n].checked);
+  else if(shopFilter==="comprados") names = names.filter(n=>items[n].checked);
+
+  const cats = {};
+  names.forEach(name=>{
+    const c = items[name].cat;
+    if(!cats[c]) cats[c]=[];
+    cats[c].push(name);
+  });
+  Object.values(cats).forEach(arr=>arr.sort((a,b)=>a.localeCompare(b,'es')));
+  const order = ["Carnes/Aves","Pescado/Marisco","Huevos/Lácteos","Legumbres/Cereales","Verduras/Hortalizas","Frutas","Otros"];
+  const html = order.filter(c=>cats[c]).map(cat=>`
+    <div class="shop-cat">${cat}</div>
+    ${cats[cat].map(name=>{
+      const it = items[name];
+      return `<div class="shop-item ${it.checked?'checked':''}">
+        <div class="chk ${it.checked?'on':''}" onclick="toggleShop('${name.replace(/'/g,"\\'")}')">${it.checked?'✓':''}</div>
+        <div class="sname">${escapeHtml(name)}</div><div class="sqty">${escapeHtml(it.qty)}</div>
+      </div>`;
+    }).join("")}
+  `).join("");
+  document.getElementById("shopContainer").innerHTML = html ||
+    (total? '<div class="empty">No hay productos en este filtro.</div>' : '<div class="empty">Genera una semana para crear la lista de la compra.</div>');
+}
+function toggleShop(name){ STATE.shopping[name].checked = !STATE.shopping[name].checked; saveState(); renderShopping(); }
+async function compartirLista(){
+  const items = STATE.shopping;
+  const names = Object.keys(items);
+  if(!names.length){ toast("No hay lista que compartir"); return; }
+  const cats = {};
+  names.forEach(name=>{ const c=items[name].cat; if(!cats[c]) cats[c]=[]; cats[c].push(name); });
+  const order = ["Carnes/Aves","Pescado/Marisco","Huevos/Lácteos","Legumbres/Cereales","Verduras/Hortalizas","Frutas","Otros"];
+  let text = "🛒 Lista de la compra — Equilátera\n\n";
+  order.filter(c=>cats[c]).forEach(cat=>{
+    text += cat.toUpperCase()+"\n";
+    cats[cat].sort((a,b)=>a.localeCompare(b,'es')).forEach(n=>{ text += `${items[n].checked?"✓":"☐"} ${n} — ${items[n].qty}\n`; });
+    text += "\n";
+  });
+  if(navigator.share){
+    try{ await navigator.share({title:"Lista de la compra", text}); return; }catch(e){ /* usuario canceló o no soportado, caemos a copiar */ }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    toast("Lista copiada al portapapeles");
+  }catch(e){
+    toast("No se pudo compartir ni copiar en este navegador");
+  }
+}
+
+/* =================== EVOLUCIÓN =================== */
+function deleteMetric(idx){
+  confirmAction("Se eliminará este registro de peso/grasa.", "deleteMetricConfirmed", idx);
+}
+function deleteMetricConfirmed(idx){
+  STATE.metrics.splice(Number(idx), 1);
+  saveState(); renderEvolucion(); toast("Registro eliminado");
+}
+function openEditMetric(idx){
+  const x = STATE.metrics[idx]; if(!x) return;
+  openModal(`<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Editar registro — ${escapeHtml(x.date)}</h3>
+    <div class="two-col">
+      <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="emPeso" value="${x.weight}"></div>
+      <div class="field"><label>% Grasa</label><input type="number" step="0.1" id="emGrasa" value="${x.fat??''}"></div>
+    </div>
+    <div class="field"><label>Cintura (cm)</label><input type="number" step="0.1" id="emCintura" value="${x.waist??''}"></div>
+    <div class="field"><label>Notas</label><textarea id="emNotas">${escapeHtml(x.notes||"")}</textarea></div>
+    <div id="emError" class="err-text" style="display:none;"></div>
+    <button class="btn btn-primary btn-block" onclick="saveEditMetric(${idx})">Guardar cambios</button>`);
+}
+function saveEditMetric(idx){
+  const errEl = document.getElementById("emError");
+  const peso = numOrNull(document.getElementById("emPeso").value);
+  if(peso===null || peso<=0){ errEl.textContent="Introduce un peso válido."; errEl.style.display="block"; return; }
+  const grasaVal = document.getElementById("emGrasa").value;
+  const grasa = grasaVal===""? null : numOrNull(grasaVal);
+  if(grasaVal!=="" && (grasa===null || grasa<0 || grasa>100)){ errEl.textContent="El % de grasa debe estar entre 0 y 100."; errEl.style.display="block"; return; }
+  const cinturaVal = document.getElementById("emCintura").value;
+  STATE.metrics[idx] = Object.assign({}, STATE.metrics[idx], {
+    weight:peso, fat:grasa, waist: cinturaVal===""?null:numOrNull(cinturaVal),
+    notes: document.getElementById("emNotas").value||""
+  });
+  STATE.metrics.sort((a,b)=>a.date.localeCompare(b.date));
+  saveState(); closeModal(); renderEvolucion(); toast("Registro actualizado");
+}
+function registrarPeso(){
+  const errEl = document.getElementById("evoError");
+  const peso = numOrNull(document.getElementById("inPeso").value);
+  const grasaVal = document.getElementById("inGrasa").value;
+  const grasa = grasaVal===""? null : numOrNull(grasaVal);
+  if(peso===null || peso<=0){ errEl.textContent="Introduce un peso válido."; errEl.style.display="block"; return; }
+  if(grasaVal!=="" && (grasa===null || grasa<0 || grasa>100)){ errEl.textContent="El % de grasa debe estar entre 0 y 100."; errEl.style.display="block"; return; }
+  errEl.style.display="none";
+  const fecha = document.getElementById("inFecha").value || todayISO();
+  const cinturaVal = document.getElementById("inCintura").value;
+  STATE.metrics.push({date:fecha, weight:peso, fat:grasa,
+    waist: cinturaVal===""? null : numOrNull(cinturaVal),
+    notes: document.getElementById("inNotas").value||""});
+  STATE.metrics.sort((a,b)=>a.date.localeCompare(b.date));
+  saveState();
+  document.getElementById("inPeso").value=""; document.getElementById("inGrasa").value="";
+  document.getElementById("inCintura").value=""; document.getElementById("inNotas").value="";
+  renderEvolucion(); renderWeek(); toast("Registro guardado");
+}
+function drawLineChart(canvasId, points, color){
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext("2d");
+  const w = canvas.clientWidth||300, h=140, dpr=window.devicePixelRatio||1;
+  canvas.width = w*dpr; canvas.height = h*dpr; ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+  if(points.length<1){ ctx.fillStyle="#5b6b66"; ctx.font="12px sans-serif"; ctx.fillText("Sin datos aún", 10, h/2); return; }
+  const vals = points.map(p=>p.v);
+  const min = Math.min(...vals)-0.5, max = Math.max(...vals)+0.5;
+  const pad = 24;
+  const xStep = points.length>1? (w-pad*2)/(points.length-1) : 0;
+  const yFor = v => h-pad - ((v-min)/(max-min||1))*(h-pad*2);
+  ctx.strokeStyle=color; ctx.lineWidth=2.2; ctx.beginPath();
+  points.forEach((p,i)=>{ const x=pad+i*xStep, y=yFor(p.v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+  ctx.fillStyle=color;
+  points.forEach((p,i)=>{ const x=pad+i*xStep, y=yFor(p.v); ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill(); });
+  ctx.fillStyle="#5b6b66"; ctx.font="10.5px sans-serif";
+  ctx.fillText(vals[0].toFixed(1), 2, yFor(vals[0])+4);
+  ctx.fillText(vals[vals.length-1].toFixed(1), w-30, yFor(vals[vals.length-1])+4);
+}
+function renderEvolucion(){
+  const m = STATE.metrics;
+  drawLineChart("chartPeso", m.map(x=>({v:x.weight})), "#1a4d43");
+  drawLineChart("chartGrasa", m.filter(x=>x.fat!=null).map(x=>({v:x.fat})), "#c25b4a");
+  const first = m[0], last = m[m.length-1];
+  const diffW = first&&last? (last.weight-first.weight) : null;
+  // tendencia de las últimas 4 semanas: comparar con el registro más cercano a 28 días antes del último
+  let trend28 = null;
+  if(last){
+    const targetTime = new Date(last.date).getTime() - 28*86400000;
+    let best=null, bestDiff=Infinity;
+    m.forEach(x=>{ const diff = Math.abs(new Date(x.date).getTime()-targetTime); if(diff<bestDiff){bestDiff=diff; best=x;} });
+    if(best && best!==last && bestDiff < 10*86400000) trend28 = last.weight - best.weight; // solo si hay un dato razonablemente cercano a esa fecha
+  }
+  document.getElementById("evoResumen").innerHTML = last? `<div class="trend-grid">
+    <div class="t-item"><div class="t-val">${last.weight} kg</div><div class="t-lbl">Peso actual</div></div>
+    <div class="t-item"><div class="t-val">${diffW!=null?(diffW>0?'+':'')+diffW.toFixed(1):'—'} kg</div><div class="t-lbl">Cambio desde el inicio</div></div>
+    <div class="t-item"><div class="t-val">${last.fat!=null?last.fat+'%':'—'}</div><div class="t-lbl">Grasa actual</div></div>
+    <div class="t-item"><div class="t-val">${trend28!=null?(trend28>0?'+':'')+trend28.toFixed(1)+' kg':'Sin datos suficientes'}</div><div class="t-lbl">Tendencia 4 semanas</div></div>
+  </div>` : '<div class="empty">Registra tu primer peso para ver aquí tu resumen.</div>';
+  document.getElementById("historialPeso").innerHTML = `
+    <div class="section-title" style="margin-top:0">Historial</div>
+    ${m.map((x,idx)=>({x,idx})).reverse().map(({x,idx})=>`<div class="meal-row" style="padding:8px 0;align-items:flex-start;">
+      <div style="flex:1"><div style="font-size:13px">${escapeHtml(x.date)}</div>
+      <div class="small-muted">${x.weight} kg${x.fat!=null?' · '+x.fat+'% grasa':''}${x.waist?' · '+x.waist+' cm cintura':''}</div>
+      ${x.notes?`<div class="small-muted">${escapeHtml(x.notes)}</div>`:""}</div>
+      <div style="display:flex;gap:4px;">
+        <button class="icon-btn" onclick="openEditMetric(${idx})" title="Editar">✏️</button>
+        <button class="icon-btn" onclick="deleteMetric(${idx})" title="Eliminar">🗑️</button>
+      </div></div>`).join("") || '<div class="empty">Aún no hay registros.</div>'}
+  `;
+}
+
+/* =================== SUPLEMENTOS =================== */
+function renderSupDaysPicker(selected){
+  selected = selected || DIAS.slice();
+  return `<div class="day-pill-picker">
+    ${DIAS.map(d=>`<label class="day-pill">
+      <input type="checkbox" class="supDayChk" value="${d}" ${selected.includes(d)?'checked':''}>
+      <span>${d.slice(0,3)}</span></label>`).join("")}
+  </div>`;
+}
+function addSuplemento(){
+  const errEl = document.getElementById("supError");
+  const name = document.getElementById("supNombre").value.trim();
+  const protein = numOrNull(document.getElementById("supProteina").value) ?? 0;
+  if(!name){ errEl.textContent="Ponle un nombre al suplemento."; errEl.style.display="block"; return; }
+  if(protein<0){ errEl.textContent="La proteína no puede ser negativa."; errEl.style.display="block"; return; }
+  errEl.style.display="none";
+  const days = Array.from(document.querySelectorAll(".supDayChk:checked")).map(x=>x.value);
+  STATE.supplements.push({id:"s"+Date.now(), name, qty:document.getElementById("supCantidad").value,
+    protein, time:document.getElementById("supHora").value, days: days.length?days:DIAS.slice(), taken:{}});
+  saveState();
+  ["supNombre","supCantidad","supProteina","supHora"].forEach(id=>document.getElementById(id).value="");
+  renderSupplements(); renderWeek(); toast("Suplemento añadido");
+}
+function delSuplemento(id){ confirmAction("Se eliminará este suplemento y su historial de tomas.", "delSuplementoConfirmed", id); }
+function delSuplementoConfirmed(id){ STATE.supplements = STATE.supplements.filter(s=>s.id!==id); saveState(); renderSupplements(); renderWeek(); }
+function toggleSupTaken(id){
+  const s = STATE.supplements.find(x=>x.id===id); if(!s) return;
+  const t = todayISO();
+  s.taken[t] = !s.taken[t];
+  saveState(); renderSupplements();
+}
+function renderSupplements(){
+  const today = currentDayName();
+  const t = todayISO();
+  document.getElementById("supList").innerHTML = STATE.supplements.map(s=>{
+    const scheduledToday = !s.days || s.days.includes(today);
+    return `<div class="card">
+      <div class="row-between">
+        <div><strong style="font-size:13.5px">${escapeHtml(s.name)}</strong>
+          <div class="small-muted">${escapeHtml(s.qty||"")} ${s.time?"· "+s.time:""} ${s.protein?"· +"+s.protein+" g proteína":""}</div>
+          <div class="sup-days-line">${(s.days||DIAS).map(d=>`<span class="sup-day-tag">${d.slice(0,3)}</span>`).join("")}</div>
+        </div>
+        <button class="icon-btn" onclick="delSuplemento('${s.id}')">🗑️</button>
+      </div>
+      ${scheduledToday? `<label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-size:12.5px;">
+        <input type="checkbox" ${s.taken[t]?'checked':''} onchange="toggleSupTaken('${s.id}')"> Tomado hoy
+      </label>` : `<div class="small-muted" style="margin-top:6px;">No programado para hoy</div>`}
+    </div>`;
+  }).join("") || '<div class="empty">No hay suplementos registrados.</div>';
+}
+
+/* =================== CONFIGURACIÓN =================== */
+function renderConfig(){
+  document.getElementById("cfgKcal").value = STATE.config.kcal;
+  document.getElementById("cfgProt").value = STATE.config.protein;
+  document.getElementById("cfgObjetivo").value = STATE.config.objetivo;
+  document.getElementById("cfgVariedad").value = STATE.config.variedad || "equilibrada";
+  document.getElementById("trainConfig").innerHTML = DIAS.map(d=>`
+    <div class="two-col" style="align-items:center;margin-bottom:6px;">
+      <div style="font-size:13px">${d}</div>
+      <select onchange="STATE.config.training['${d}']=this.value" style="border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--cream);">
+        ${["Descanso","Fuerza","Bici","Cardio"].map(o=>`<option value="${o}" ${STATE.config.training[d]===o?'selected':''}>${o}</option>`).join("")}
+      </select>
+    </div>`).join("");
+  const hist = document.getElementById("historyWeeks");
+  hist.innerHTML = STATE.weekHistory.length? STATE.weekHistory.map((w,i)=>`
+    <div style="padding:6px 0;border-top:1px solid var(--line);">
+      <div class="row-between">
+        <span>Semana del ${w.startDate}${w.targetsAtGeneration?` · ${w.targetsAtGeneration.kcal} kcal / ${w.targetsAtGeneration.protein} g`:""}</span>
+      </div>
+      <div class="two-col" style="margin-top:6px;">
+        <button class="btn btn-outline btn-sm" onclick="restoreWeek(${i})">Reutilizar</button>
+        <button class="btn btn-outline btn-sm" onclick="openCompareModal(${i})">🔍 Comparar con la actual</button>
+      </div>
+    </div>`).join("") : "Aún no hay semanas guardadas.";
+}
+function saveConfig(){
+  const errEl = document.getElementById("cfgError");
+  const kcal = numOrNull(document.getElementById("cfgKcal").value);
+  const protein = numOrNull(document.getElementById("cfgProt").value);
+  if(kcal===null || kcal<=0 || kcal>6000){ errEl.textContent="Introduce unas kcal objetivo razonables (1-6000)."; errEl.style.display="block"; return; }
+  if(protein===null || protein<=0 || protein>400){ errEl.textContent="Introduce una proteína objetivo razonable (1-400 g)."; errEl.style.display="block"; return; }
+  errEl.style.display="none";
+  const changed = kcal!==STATE.config.kcal || protein!==STATE.config.protein;
+  STATE.config.kcal = kcal;
+  STATE.config.protein = protein;
+  STATE.config.objetivo = document.getElementById("cfgObjetivo").value;
+  STATE.config.variedad = document.getElementById("cfgVariedad").value;
+  if(changed && STATE.currentWeek) STATE.currentWeek.stale = true;
+  saveState(); toast("Configuración guardada"); renderWeek();
+}
+function restoreWeek(i){
+  if(STATE.currentWeek){
+    const already = STATE.weekHistory.some(w=>w.startDate===STATE.currentWeek.startDate);
+    if(!already) STATE.weekHistory.push(deepClone(STATE.currentWeek));
+  }
+  STATE.currentWeek = deepClone(STATE.weekHistory[i]);
+  STATE.currentWeek.stale = STATE.currentWeek.targetsAtGeneration &&
+    (STATE.currentWeek.targetsAtGeneration.kcal!==STATE.config.kcal || STATE.currentWeek.targetsAtGeneration.protein!==STATE.config.protein);
+  saveState(); buildShoppingFromWeek(); nav("semana");
+}
+
+/* =================== COPIA DE SEGURIDAD (exportar / importar) =================== */
+function exportarDatos(){
+  const blob = new Blob([JSON.stringify(STATE, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "equilatera-backup-"+todayISO()+".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("Copia descargada");
+}
+function importarDatos(event){
+  const errEl = document.getElementById("importError");
+  const file = event.target.files && event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const parsed = JSON.parse(reader.result);
+      if(!parsed || typeof parsed!=="object" || !parsed.config){ throw new Error("Formato no reconocido"); }
+      STATE = migrate(parsed);
+      saveState();
+      errEl.style.display="none";
+      toast("Datos importados correctamente");
+      renderConfig(); renderWeek();
+    }catch(e){
+      errEl.textContent = "No se pudo importar: el archivo no es una copia de seguridad válida.";
+      errEl.style.display = "block";
+    }
+  };
+  reader.onerror = ()=>{ errEl.textContent="No se pudo leer el archivo."; errEl.style.display="block"; };
+  reader.readAsText(file);
+  event.target.value = ""; // permite volver a elegir el mismo archivo si hace falta
+}
+
+/* =================== COMPARAR SEMANAS =================== */
+function computeWeekStats(w){
+  let kcalSum=0, protSum=0, daysWithData=0, doneCount=0, totalCount=0;
+  const idsUsed = [];
+  DIAS.forEach(d=>{
+    if(!w.days || !w.days[d]) return;
+    let dayKcal=0, dayProt=0, hasAny=false;
+    MEAL_TYPES.forEach(([mt])=>{
+      const id = w.days[d][mt];
+      if(id){
+        idsUsed.push(id); totalCount++;
+        if(w.status && w.status[d] && w.status[d][mt]==="done") doneCount++;
+      }
+      const r = id? findRecipe(id): null;
+      if(r && !r.free){ dayKcal+=r.kcal; dayProt+=r.protein; hasAny=true; }
+    });
+    if(hasAny){ kcalSum+=dayKcal; protSum+=dayProt; daysWithData++; }
+  });
+  return {
+    kcalAvg: daysWithData? Math.round(kcalSum/daysWithData) : 0,
+    protAvg: daysWithData? Math.round(protSum/daysWithData) : 0,
+    uniqueRecipes: new Set(idsUsed).size,
+    totalSlots: idsUsed.length,
+    adherencia: totalCount? Math.round(doneCount/totalCount*100) : null
+  };
+}
+function openCompareModal(historyIndex){
+  const wOld = STATE.weekHistory[historyIndex];
+  const wNew = STATE.currentWeek;
+  if(!wNew){ toast("No hay una semana actual con la que comparar"); return; }
+  const a = computeWeekStats(wOld), b = computeWeekStats(wNew);
+  const idsOld = new Set(), idsNew = new Set();
+  DIAS.forEach(d=>{
+    if(wOld.days && wOld.days[d]) MEAL_TYPES.forEach(([mt])=>{ if(wOld.days[d][mt]) idsOld.add(wOld.days[d][mt]); });
+    if(wNew.days && wNew.days[d]) MEAL_TYPES.forEach(([mt])=>{ if(wNew.days[d][mt]) idsNew.add(wNew.days[d][mt]); });
+  });
+  const repetidas = [...idsOld].filter(id=>idsNew.has(id)).length;
+  const row = (label, va, vb)=>`<div class="impact-row"><span>${label}</span><span>${va} &nbsp;vs&nbsp; ${vb}</span></div>`;
+  const html = `<button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>Comparar semanas</h3>
+    <div class="small-muted" style="margin-bottom:8px;">Semana del ${escapeHtml(wOld.startDate)} &nbsp;vs&nbsp; semana actual (${escapeHtml(wNew.startDate)})</div>
+    <div class="impact-box">
+      ${row("Kcal media/día", a.kcalAvg, b.kcalAvg)}
+      ${row("Proteína media/día", a.protAvg+" g", b.protAvg+" g")}
+      ${row("Recetas distintas usadas", a.uniqueRecipes, b.uniqueRecipes)}
+      ${row("Adherencia", (a.adherencia??"—")+"%", (b.adherencia??"—")+"%")}
+      <div class="impact-row total"><span>Recetas repetidas entre ambas</span><span>${repetidas}</span></div>
+    </div>`;
+  openModal(html);
+}
+
+/* =================== "REHACER SEMANA" (arquitectura preparada, sin lenguaje natural real todavía) =================== */
+function toggleRehacer(){
+  const box = document.getElementById("rehacerBox");
+  box.style.display = box.style.display==="none"? "block" : "none";
+}
+function regenerarConNota(){
+  const nota = document.getElementById("rehacerNota").value.trim();
+  if(nota) STATE.regenNotes.push({date:todayISO(), note:nota});
+  saveState();
+  document.getElementById("rehacerBox").style.display="none";
+  document.getElementById("rehacerNota").value="";
+  const mods = parseRegenNote(nota);
+  SESSION_MODS = mods;
+  if(nota && mods.summary.length===0){
+    confirmAction('No he sabido interpretar ninguna instrucción concreta de tu nota ("'+nota+'"). Se guardará igualmente como nota, pero la semana se generará SIN aplicarle ningún cambio especial. ¿Continuar?', "iniciarGeneracion");
+  } else {
+    iniciarGeneracion();
+  }
+}
+
+/* =================== Generar semana con feedback breve (honesto, no una IA falsa) =================== */
+function iniciarGeneracion(){
+  if(STATE.currentWeek){
+    confirmAction("Se sustituirá tu semana actual por una nueva (la anterior queda guardada en el historial de Configuración).", "iniciarGeneracionConfirmed");
+  } else {
+    iniciarGeneracionConfirmed();
+  }
+}
+function iniciarGeneracionConfirmed(){
+  const btn = document.getElementById("btnGenerar");
+  if(btn.disabled) return;
+  btn.disabled = true;
+  const pasos = ["Analizando preferencias…","Optimizando calorías…","Ajustando proteína…","Buscando variedad…","Adaptando entrenamiento…"];
+  let i = 0;
+  const original = btn.textContent;
+  const tick = ()=>{
+    if(i < pasos.length){ btn.textContent = pasos[i]; i++; setTimeout(tick, 160); }
+    else{
+      const summary = generarSemana();
+      btn.textContent = "Semana lista ✓";
+      setTimeout(()=>{ btn.textContent = original; btn.disabled = false; }, 700);
+      toast(summary && summary.length? "Semana generada 🎉 ("+summary.join(", ")+")" : "Semana generada 🎉");
+    }
+  };
+  tick();
+}
+
+/* =================== INIT =================== */
+document.getElementById("inFecha").value = todayISO();
+// pequeños contenedores de error que faltaban en el HTML original de los formularios
+(function ensureErrorSlots(){
+  const evoBtn = document.querySelector('button[onclick="registrarPeso()"]');
+  if(evoBtn && !document.getElementById("evoError")){
+    const d = document.createElement("div"); d.id="evoError"; d.className="err-text"; d.style.display="none";
+    evoBtn.parentNode.insertBefore(d, evoBtn);
+  }
+  const supBtn = document.querySelector('button[onclick="addSuplemento()"]');
+  if(supBtn && !document.getElementById("supError")){
+    const d = document.createElement("div"); d.id="supError"; d.className="err-text"; d.style.display="none";
+    supBtn.parentNode.insertBefore(d, supBtn);
+    const picker = document.createElement("div"); picker.className="field"; picker.innerHTML = '<label>Días</label>'+renderSupDaysPicker();
+    supBtn.parentNode.insertBefore(picker, supBtn);
+  }
+  const cfgBtn = document.querySelector('button[onclick="saveConfig()"]');
+  if(cfgBtn && !document.getElementById("cfgError")){
+    const d = document.createElement("div"); d.id="cfgError"; d.className="err-text"; d.style.display="none";
+    cfgBtn.parentNode.insertBefore(d, cfgBtn);
+  }
+})();
+renderWeek();
+</script>
+</body>
+</html>
